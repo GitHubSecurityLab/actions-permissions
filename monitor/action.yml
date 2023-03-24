@@ -1,0 +1,20 @@
+name: 'GitHub Actions Permissions Monitor'
+description: 'An action to monitor the usage GitHub API to identify the minimal permissions required for a GitHub Action'
+inputs:
+  token:
+    description: 'The temporary repository token to monitor'
+    required: false
+    default: ${{ github.token }}
+  config:
+    description: 'Configuration json'
+    required: false
+  debug:
+    description: 'Enable debug logging'
+    required: false
+    default: false
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+  post: 'dist/index.js'
+  post-if: success()

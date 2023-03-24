@@ -1,0 +1,20 @@
+name: 'GitHub Actions Permissions Advisor'
+description: 'An action to aggregate results from Permissions Monitor from the previous runs and advise the minimal permissions required for a GitHub Action'
+inputs:
+  token:
+    description: 'The repository token to read previous runs'
+    required: false
+    default: ${{ github.token }}
+  name:
+    description: 'The name of the workflow file to analyze'
+    required: true
+    type: string
+  count:
+    description: 'How many last runs to analyze'
+    required: false
+    type: number
+    default: 10
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
