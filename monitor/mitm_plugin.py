@@ -208,14 +208,11 @@ class GHActionsProxy:
 
     def get_permission(self, path, method, query):
         path_segments = path.split('/')
-        self.log_debug('get_permission path_segments: %s' % path_segments)
 
         if len(path_segments) >= 3:
             if path_segments[1] == 'repos' and not self.same_repository(path_segments[2], path_segments[3]):
-                self.log_debug('get_permission `calling other repository, the token doesn\'t apply`')
                 return []
         elif len(path_segments) >= 2:
-            self.log_debug('get_permission `calling other repository, the token doesn\'t apply`')
             if path_segments[1] == 'repositories' and not self.same_repository(path_segments[2]):
                 return []
 
@@ -230,18 +227,13 @@ class GHActionsProxy:
                     break
             node = next_node
 
-        self.log_debug('get_permission node: %s' % (node if node else 'None'))
-
         # If the node was found extract the permission
         if node:
             permissions = node.get(self.methods_map[method])
-            self.log_debug("get_permission permissions: ('%s', '%s')" %
-                           permissions if permissions else 'None')
             if permissions:  # If the node was found, but the HTTP method wasn't, fall through to search by path pattern
                 if permissions[0].startswith('issues/pull-requests'):
                     # Every pull request is an issue, but not every issue is a pull request case. Try to find out the type.
                     id = permissions[0].split('/')[2]
-                    self.log_debug("get_permission id: %s" % id)
                     if id == 'issue_number':
                         url = ''
                         if path_segments[1] == 'repos':
@@ -250,7 +242,6 @@ class GHActionsProxy:
                         elif path_segments[1] == 'repositories':
                             url = 'https://api.github.com/repositories/%s/pulls/%s' % (
                                 path_segments[2], path_segments[4])
-                        self.log_debug("get_permission url: %s" % url)
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
@@ -267,7 +258,6 @@ class GHActionsProxy:
                         elif path_segments[1] == 'repositories':
                             url = 'https://api.github.com/repositories/%s/issues/comments/%s' % (
                                 path_segments[2], path_segments[5])
-                        self.log_debug("get_permission url: %s" % url)
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
@@ -289,7 +279,6 @@ class GHActionsProxy:
                         elif path_segments[1] == 'repositories':
                             url = 'https://api.github.com/repositories/%s/issues/events/%s' % (
                                 path_segments[2], path_segments[5])
-                        self.log_debug("get_permission url: %s" % url)
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
@@ -311,7 +300,6 @@ class GHActionsProxy:
 
                 return [permissions]
 
-        self.log_debug('get_permission `if len(path_segments) >= 5`')
         # Get the permission by the pattern of (GET|POST|etc) /repos/{owner}/{repo}/{what}/{id} -> {what, permission}
         if len(path_segments) >= 5:
             if path_segments[1] == 'repos' and path_segments[4] == 'actions':
@@ -508,13 +496,13 @@ class GHActionsProxy:
 
             self.log_debug('%s %s' % (
                 flow.request.method, flow.request.url.replace(url_parts.hostname, hostname)))
-            self.log_debug('%s' % flow.request.headers)
 
             # log a JSON like (no comma separators between objects and no wrapping array) list of objects, that will be post-processed later
             for k, v in flow.request.headers.items():
                 if k.upper().strip().startswith('AUTHORIZATION'):
+                    self.log_debug('The request contains an authorization header')
                     if self.contains_token(v, ctx.options.token):
-                        if ctx.options.debug or hostname in self.ip_map or hostname in self.dns_map:
+                        if hostname in self.ip_map or hostname in self.dns_map:
                             permissions = self.get_permission(
                                 url_parts.path, flow.request.method, parse_qs(parsed_url.query))
                             self.write_json(permissions, flow.request.method, hostname, url_parts.path)
