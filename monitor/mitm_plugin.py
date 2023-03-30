@@ -30,9 +30,23 @@ class GHActionsProxy:
         for host in ctx.options.hosts.split(','):
             self.add_to_maps(host.strip())
 
+    def is_public_repo(self, repo):
+        if repo in self.repo_map:
+            return self.repo_map[repo]
+
+        repo_path = 'repos' if '/' in repo else 'repositories'
+        url = f'https://api.github.com/{repo_path}/{repo}'
+        response = requests.get(url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
+        if response.status_code == 200:
+            self.repo_map[repo] = response.json()['private'] == False
+            return self.repo_map[repo]
+        else:
+            return False
+
     def __init__(self):
         self.ip_map = {}
         self.dns_map = {}
+        self.repo_map = {}
 
         self.methods_map = {
             'GET':      HTTP.GET,
@@ -44,9 +58,6 @@ class GHActionsProxy:
 
         # a map of tricky permissions, that do not fall into a pattern of (GET|POST|etc) /repos/{owner}/{repo}/{what}/{id} -> {what, permission}
         map = {
-            ('GET',     '/repos/{owner}/{repo}/environments',                                       'actions',                  'read'),
-            ('GET',     '/repositories/{id}/environments',                                          'actions',                  'read'),
-
             ('GET',     '/repos/{owner}/{repo}/codeowners/errors',                                  'contents',                 'read'),
             ('GET',     '/repositories/{id}/codeowners/errors',                                     'contents',                 'read'),
             ('PUT',     '/repos/{owner}/{repo}/pulls/{pull_number}/merge',                          'contents',                 'write'),
@@ -303,6 +314,12 @@ class GHActionsProxy:
         # Get the permission by the pattern of (GET|POST|etc) /repos/{owner}/{repo}/{what}/{id} -> {what, permission}
         if len(path_segments) >= 5:
             if path_segments[1] == 'repos' and path_segments[4] == 'actions':
+                if method == 'GET' and self.is_public_repo(f'{path_segments[2]}/{path_segments[3]}'):
+                    return []
+                return [('actions', 'read' if method == 'GET' else 'write')]
+            elif path_segments[1] == 'repos' and path_segments[4] == 'environments':
+                if method == 'GET' and self.is_public_repo(f'{path_segments[2]}/{path_segments[3]}'):
+                    return []
                 return [('actions', 'read' if method == 'GET' else 'write')]
             elif path_segments[1] == 'repos' and (path_segments[4] == 'check-runs' or path_segments[4] == 'check-suites'):
                 return [('checks', 'read' if method == 'GET' else 'write')]
@@ -332,6 +349,12 @@ class GHActionsProxy:
 
         if len(path_segments) >= 4:
             if path_segments[1] == 'repositories' and path_segments[3] == 'actions':
+                if method == 'GET' and self.is_public_repo(path_segments[2]):
+                    return []
+                return [('actions', 'read' if method == 'GET' else 'write')]
+            elif path_segments[1] == 'repositories' and path_segments[3] == 'environments':
+                if method == 'GET' and self.is_public_repo(path_segments[2]):
+                    return []
                 return [('actions', 'read' if method == 'GET' else 'write')]
             elif path_segments[1] == 'repositories' and (path_segments[3] == 'check-runs' or path_segments[3] == 'check-suites'):
                 return [('checks', 'read' if method == 'GET' else 'write')]
