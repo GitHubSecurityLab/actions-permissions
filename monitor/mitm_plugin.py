@@ -324,6 +324,8 @@ class GHActionsProxy:
             elif path_segments[1] == 'repos' and (path_segments[4] == 'check-runs' or path_segments[4] == 'check-suites'):
                 return [('checks', 'read' if method == 'GET' else 'write')]
             elif path_segments[1] == 'repos' and (path_segments[4] == 'releases' or path_segments[4] == 'git' or path_segments[4] == 'commits'):
+                if method == 'GET' and self.is_public_repo(f'{path_segments[2]}/{path_segments[3]}'):
+                    return []
                 return [('contents', 'read' if method == 'GET' else 'write')]
             elif path_segments[1] == 'repos' and path_segments[4] == 'deployments':
                 return [('deployments', 'read' if method == 'GET' else 'write')]
@@ -343,6 +345,8 @@ class GHActionsProxy:
                 return [('statuses', 'read' if method == 'GET' else 'write')]
             elif path_segments[3] == 'info' and path_segments[4] == 'refs':
                 if query['service'][0] == 'git-upload-pack':
+                    if self.is_public_repo(f'{path_segments[1]}/{path_segments[2]}'):
+                        return []
                     return [('contents', 'read')]
                 elif query['service'][0] == 'git-receive-pack':
                     return [('contents', 'write')]
@@ -359,6 +363,8 @@ class GHActionsProxy:
             elif path_segments[1] == 'repositories' and (path_segments[3] == 'check-runs' or path_segments[3] == 'check-suites'):
                 return [('checks', 'read' if method == 'GET' else 'write')]
             elif path_segments[1] == 'repositories' and (path_segments[3] == 'releases' or path_segments[3] == 'git' or path_segments[3] == 'commits'):
+                if method == 'GET' and self.is_public_repo(path_segments[2]):
+                    return []
                 return [('contents', 'read' if method == 'GET' else 'write')]
             elif path_segments[1] == 'repositories' and path_segments[3] == 'deployments':
                 return [('deployments', 'read' if method == 'GET' else 'write')]
@@ -377,6 +383,8 @@ class GHActionsProxy:
             elif path_segments[1] == 'projects':
                 return [('repository-projects', 'read' if method == 'GET' else 'write')]
             elif path_segments[3] == 'git-upload-pack':
+                if self.is_public_repo(f'{path_segments[1]}/{path_segments[2]}'):
+                    return []
                 return [('contents', 'read')]
             elif path_segments[3] == 'git-receive-pack':
                 return [('contents', 'write')]
