@@ -1,4 +1,4 @@
-# GitHub token permissions usage Monitor and Advisor actions (PUBLIC BETA)
+# GitHub token permissions Monitor and Advisor actions (PUBLIC BETA)
 
 ![Logo](res/logo.png "Logo")
 
