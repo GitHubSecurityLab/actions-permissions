@@ -4,7 +4,7 @@
 
 Demo:
 
-res/demo.mp4
+https://github.com/GitHubSecurityLab/actions-permissions/blob/main/res/demo.mp4?raw=true
 
 Applying the least privilege permissions to a GitHub Actions workflow is a best security practice, but can be challenging as it may break existing workflows.
 
