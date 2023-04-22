@@ -2,6 +2,10 @@
 
 ![Logo](res/logo.png "Logo")
 
+Demo:
+
+res/demo.mp4
+
 Applying the least privilege permissions to a GitHub Actions workflow is a best security practice, but can be challenging as it may break existing workflows.
 
 The Monitor action, when added to a workflow, tracks the usage of the temporary GitHub repository token and gives recommendations on the minimum permissions required to run the workflow based on the actual detected workflow activity. Every workflow run generates a summary report with the recommendations. Since some steps or jobs may be skipped based on various conditions, the Advisor action can aggregate and summarize the recommendations from multiple workflow runs.
