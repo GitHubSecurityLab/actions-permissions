@@ -2,9 +2,7 @@
 
 ![Logo](res/logo.png "Logo")
 
-Demo:
-
-res/demo.mp4
+https://user-images.githubusercontent.com/26652396/233808087-ccf82bb4-2df7-4d38-8bd4-c5a341303a6e.mp4
 
 Applying the least privilege permissions to a GitHub Actions workflow is a best security practice, but can be challenging as it may break existing workflows.
 
