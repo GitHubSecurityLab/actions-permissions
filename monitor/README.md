@@ -48,7 +48,7 @@ The Monitor action accepts a `config` input parameter. The configuration is a JS
 If the configuration is not provided, the default values are used, but it is recommended to provide a [variable](https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows) explicitly even if doesn't exist yet. This will make it easier to provide the configuration later without changing the workflows:
 
 ```yaml
-      - uses: github/actions-permissions/monitor@v1
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
         with:
           config: ${{ vars.PERMISSIONS_CONFIG }}
 ```
