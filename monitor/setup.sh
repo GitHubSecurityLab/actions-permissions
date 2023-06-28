@@ -114,6 +114,8 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   echo "NODE_EXTRA_CA_CERTS=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Python requests library to use the certificate
   echo "REQUESTS_CA_BUNDLE=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # set environment variable for the Elixir Hex package manager to use the certificate
+  echo "HEX_CACERTS_PATH=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
 
   # setup global redirection
   sudo sysctl -w net.ipv4.ip_forward=1
