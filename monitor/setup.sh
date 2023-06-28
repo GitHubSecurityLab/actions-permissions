@@ -30,7 +30,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   pid=$(sudo lsof -i -P -n 2>/dev/null | sed -En "s/Python *([0-9]*) *mitmproxyuser *.*TCP \*:8080 \(LISTEN\)/\1/p" | head -1)
   sudo kill $pid
 
-  # install mitmpoxy certificate as CA
+  # install mitmproxy certificate as CA
   # disable any GUI prompts for certificate installation
   sudo security authorizationdb write com.apple.trust-settings.admin allow
   # the command itself may run https requests, this is why we didn't setup transparent proxy yet
@@ -104,7 +104,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
     fi
   done
 
-  # install mitmpoxy certificate as CA
+  # install mitmproxy certificate as CA
   sudo mkdir /usr/local/share/ca-certificates/extra
   sudo openssl x509 -in /home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem -inform PEM -out ~/mitmproxy-ca-cert.crt
   sudo cp ~/mitmproxy-ca-cert.crt /usr/local/share/ca-certificates/extra/mitmproxy-ca-cert.crt
