@@ -44,6 +44,8 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   echo "NODE_EXTRA_CA_CERTS=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Python requests library to use the certificate
   echo "REQUESTS_CA_BUNDLE=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # set environment variable for the Elixir Hex package manager to use the certificate
+  echo "HEX_CACERTS_PATH=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
 
   # Enable IP forwarding.
   sudo sysctl -w net.inet.ip.forwarding=1
