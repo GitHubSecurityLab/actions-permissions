@@ -59,7 +59,7 @@ The Monitor action is not able to detect the usage of the GitHub token in the fo
 
 * WindowsOS runners are not supported (yet, pull-requests are welcome if you know how to redirect all OS outgoing request through a transparent proxy, but not the outgoing proxy traffic itself).
 
-* GitHub GraphQL API usage is not monitored. It would requires parsing and understanding the GraphQL queries. Pull-requests are welcome.
+* GitHub GraphQL API usage is not monitored. It would require parsing and understanding the GraphQL queries. Pull-requests are welcome.
 
 * The `discussions` permission type is not supported yet. AFAIK it is GraphQL only.
 
