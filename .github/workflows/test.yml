@@ -1,0 +1,66 @@
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  job1:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        # - ubuntu-20.04
+        # - ubuntu-18.04
+        # - macos-latest
+        # - macos-11
+        # - macos-10.15
+        # - windows-latest
+        # - windows-2019
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+      
+      - uses: actions/checkout@v3
+      
+      # Docker build or pull needs CA fixup?
+      - run: docker build --rm --tag elixir_boilerplate:latest .
+          
+      - run: |
+          docker pull hello-world
+          docker run hello-world
+      
+      - run: docker pull quay.io/jetstack/cert-manager-controller:v1.8.2
+      
+      # test github-script CA
+      - name: github-script
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data } = await github.rest.issues.listLabelsOnIssue({
+              issue_number: 2,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            
+      # test gh CA
+      - name: gh api
+        env:
+            GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/issues/1/labels
+
+      # test curl CA
+      - name: curl
+        run: |
+          curl \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ github.token }}"\
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://Api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/labels
