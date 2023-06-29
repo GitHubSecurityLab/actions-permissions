@@ -116,6 +116,10 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   echo "REQUESTS_CA_BUNDLE=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Elixir Hex package manager to use the certificate
   echo "HEX_CACERTS_PATH=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # copy certificate to Docker directory
+  sudo mkdir -p /etc/docker/certs.d/registry-1.docker.io:443
+  sudo cp ~/mitmproxy-ca-cert.crt /etc/docker/certs.d/registry-1.docker.io:443
+  sudo service docker restart
 
   # setup global redirection
   sudo sysctl -w net.ipv4.ip_forward=1
