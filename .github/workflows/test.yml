@@ -29,17 +29,18 @@ jobs:
       
       # Docker build or pull needs CA fixup?
       - run: |
-          echo '
-FROM node:18.16-bookworm-slim AS npm-builder
+          cat <<EOF > Dockerfile
+          FROM node:18.16-bookworm-slim AS npm-builder
 
-# Install Debian dependencies
-RUN apt-get update -y && \
-    apt-get install -y build-essential git && \
-    apt-get clean && \
-    rm -f /var/lib/apt/lists/*_*
+          # Install Debian dependencies
+          RUN apt-get update -y && \
+              apt-get install -y build-essential git && \
+              apt-get clean && \
+              rm -f /var/lib/apt/lists/*_*
 
-COPY LICENSE /
-CMD ["cat LICENSE"]' > ./Dockerfile
+          COPY LICENSE /
+          CMD ["cat LICENSE"]
+          EOF
           docker build --rm --tag elixir_boilerplate:latest .
           
       - run: |
