@@ -12,7 +12,7 @@ The index.js script can be invoked as:
 
 * Command line tool.
 
-  Download the [index.js](dist/index.js) script and run it as:\
+  Download the [dist/index.js](dist/index.js) script and run it as:
 
   ```bash
   node index.js <workflow_name.yml> <number_of_the_last_runs> <github_owner> <repo_name> <branch_name>
