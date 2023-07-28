@@ -9715,10 +9715,19 @@ async function run() {
       }
 
       const results = JSON.parse(`[${data.trim().replace(/\r?\n|\r/g, ',')}]`);
-
+      
+      const api_url = process.env.GITHUB_API_URL
       const hosts = new Set();
-      hosts.add('api.github.com');
-      hosts.add('github.com');
+      if (api_url === "https://api.github.com") {      
+        hosts.add('api.github.com');
+        hosts.add('github.com');
+      }
+      else {
+        // use the host of the api url
+        const url = new URL(api_url);
+        hosts.add(url.hostname);
+      }
+
       if (process.env.ACTIONS_ID_TOKEN_REQUEST_URL) {
         const host = process.env.ACTIONS_ID_TOKEN_REQUEST_URL.split('/')[2];
         hosts.add(host.toLowerCase());
