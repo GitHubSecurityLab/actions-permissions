@@ -90,7 +90,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   sudo -u mitmproxyuser -H bash -e -c 'cd ~ && python3.9 get-pip.py && ~/.local/bin/pip3.9 install --user mitmproxy'
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
-  sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && /home/mitmproxyuser/.local/bin/mitmdump --mode transparent --allow-hosts '140.82.113.6' --showhost --set block_global=false -q -s /home/mitmproxyuser/mitm_plugin.py --set output='/home/mitmproxyuser/out.txt' --set token='$INPUT_TOKEN' --set hosts='api.github.com,github.com' --set debug='$RUNNER_DEBUG' --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' &"
+  sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && /home/mitmproxyuser/.local/bin/mitmdump --mode transparent --allow-hosts '140.82.114.5' --showhost --set block_global=false -q -s /home/mitmproxyuser/mitm_plugin.py --set output='/home/mitmproxyuser/out.txt' --set token='$INPUT_TOKEN' --set hosts='api.github.com,github.com' --set debug='$RUNNER_DEBUG' --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' &"
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
