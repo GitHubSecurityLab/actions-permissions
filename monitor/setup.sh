@@ -96,7 +96,6 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
   sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
                                       /home/mitmproxyuser/.local/bin/mitmdump --mode transparent \
-                                                                              --allow-hosts 'api.github.com' \
                                                                               --showhost \
                                                                               --set block_global=false \
                                                                               -q \
