@@ -116,6 +116,8 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   echo "REQUESTS_CA_BUNDLE=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Elixir Hex package manager to use the certificate
   echo "HEX_CACERTS_PATH=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # set environment variable for Maven to use the certificate
+  echo "MAVEN_OPTS=-Djavax.net.ssl.keyStore=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
 
   # setup global redirection
   sudo sysctl -w net.ipv4.ip_forward=1
