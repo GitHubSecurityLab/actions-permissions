@@ -94,7 +94,21 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
                                        tar -xvzf mitmproxy-10.3.1-linux-x86_64.tar.gz -C .local/bin'
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
-  sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && /home/mitmproxyuser/.local/bin/mitmdump --mode transparent --allow-hosts 'github.com' --showhost --set block_global=false -q -s /home/mitmproxyuser/mitm_plugin.py --set output='/home/mitmproxyuser/out.txt' --set token='$INPUT_TOKEN' --set hosts='api.github.com,github.com' --set debug='$RUNNER_DEBUG' --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' &"
+  sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
+                                      /home/mitmproxyuser/.local/bin/mitmdump --mode transparent \
+                                                                              --allow-hosts 'api.github.com' \
+                                                                              --showhost \
+                                                                              --set block_global=false \
+                                                                              -q \
+                                                                              -s /home/mitmproxyuser/mitm_plugin.py \
+                                                                              --set output='/home/mitmproxyuser/out.txt' \
+                                                                              --set token='$INPUT_TOKEN' \
+                                                                              --set hosts='api.github.com,github.com' \
+                                                                              --set debug='$RUNNER_DEBUG' \
+                                                                              --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' \
+                                                                              --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
+                                                                              --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' \
+                                                                              --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' &"
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
