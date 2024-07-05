@@ -101,6 +101,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
                                                                               --set block_global=false \
                                                                               `#-q` \
                                                                               --set termlog_verbosity=debug \
+                                                                              --set proxy_debug=True \
                                                                               -s /home/mitmproxyuser/mitm_plugin.py \
                                                                               --set output='/home/mitmproxyuser/out.txt' \
                                                                               --set token='$INPUT_TOKEN' \
