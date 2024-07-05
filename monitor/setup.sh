@@ -97,7 +97,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
                                       /home/mitmproxyuser/.local/bin/mitmdump --mode transparent \
                                                                               --showhost \
-                                                                              --allow-hosts '\bgithub\.com\b' \
+                                                                              --allow-hosts '\bgithub\.com(:\d+)$' \
                                                                               --set block_global=false \
                                                                               `#-q` \
                                                                               --set termlog_verbosity=debug \
