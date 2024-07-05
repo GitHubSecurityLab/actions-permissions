@@ -97,12 +97,11 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
                                       /home/mitmproxyuser/.local/bin/mitmdump --mode transparent \
                                                                               --showhost \
-                                                                              --allow-hosts '(api\.)?github\.com' \
+                                                                              --allow-hosts '\bgithub\.com\b' \
                                                                               --set block_global=false \
                                                                               `#-q` \
                                                                               --set termlog_verbosity=debug \
                                                                               --set proxy_debug=true \
-                                                                              --set tcp_hosts='github.com' \
                                                                               -s /home/mitmproxyuser/mitm_plugin.py \
                                                                               --set output='/home/mitmproxyuser/out.txt' \
                                                                               --set token='$INPUT_TOKEN' \
