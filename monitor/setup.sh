@@ -78,24 +78,26 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   sudo apt install -y python3-pip software-properties-common
 
   # install python 3.9, otherwise ubuntu installs 3.8 and we won't get the latest mitmproxy with important bug fixes
-  sudo add-apt-repository ppa:deadsnakes/ppa -y
-  sudo apt install -y python3.9 python3.9-distutils
+  # sudo add-apt-repository ppa:deadsnakes/ppa -y
+  # sudo apt install -y python3.9 python3.9-distutils
 
   # create mitmproxyuser, otherwise proxy won't intercept local trafic from the same user
   sudo useradd --create-home mitmproxyuser
   sudo passwd -d mitmproxyuser
 
   # install mitmproxy
-  sudo cp get-pip.py /home/mitmproxyuser/get-pip.py
-  #sudo -u mitmproxyuser -H bash -e -c 'cd ~ && python3.9 get-pip.py && ~/.local/bin/pip3.9 install --user mitmproxy'
+  # sudo cp get-pip.py /home/mitmproxyuser/get-pip.py
+  # sudo -u mitmproxyuser -H bash -e -c 'cd ~ && python3.9 get-pip.py && ~/.local/bin/pip3.9 install --user mitmproxy'
   sudo -u mitmproxyuser -H bash -e -c 'cd ~ && \
-                                       wget -q https://downloads.mitmproxy.org/10.3.1/mitmproxy-10.3.1-linux-x86_64.tar.gz && \
-                                       mkdir -p .local/bin && \
-                                       tar -xvzf mitmproxy-10.3.1-linux-x86_64.tar.gz -C .local/bin'
+                                       git clone https://github.com/mitmproxy/mitmproxy.git && \
+                                       cd mitmproxy && \
+                                       python3 -m venv venv && \
+                                       venv/bin/pip install -e ".[dev]" && \
+                                       cd ..'
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
   sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
-                                      /home/mitmproxyuser/.local/bin/mitmdump --mode transparent \
+                                      /home/mitmproxyuser/mitmproxy/venv/bin/mitmdump --mode transparent \
                                                                               --showhost \
                                                                               --allow-hosts '\bgithub\.com(:\d+)$' \
                                                                               --set block_global=false \
