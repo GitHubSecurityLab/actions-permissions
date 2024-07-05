@@ -100,8 +100,8 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
                                                                               --allow-hosts 'github.com' \
                                                                               --set block_global=false \
                                                                               `#-q` \
-                                                                              --set termlog_verbosity=debug \
-                                                                              --set proxy_debug=true \
+                                                                              `#--set termlog_verbosity=debug` \
+                                                                              `#--set proxy_debug=true` \
                                                                               -s /home/mitmproxyuser/mitm_plugin.py \
                                                                               --set output='/home/mitmproxyuser/out.txt' \
                                                                               --set token='$INPUT_TOKEN' \
