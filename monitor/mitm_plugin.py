@@ -455,7 +455,7 @@ class GHActionsProxy:
     def log_debug(self, msg):
         if ctx.options.debug:
             with open('debug.log', 'a+') as f:
-                f.write('%s\n' % msg)
+                f.write('actions-permissions: %s\n' % msg)
 
     def log_error(self, msg):
         with open('error.log', 'a+') as f:
