@@ -89,7 +89,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   # sudo cp get-pip.py /home/mitmproxyuser/get-pip.py
   # sudo -u mitmproxyuser -H bash -e -c 'cd ~ && python3.9 get-pip.py && ~/.local/bin/pip3.9 install --user mitmproxy'
   sudo -u mitmproxyuser -H bash -e -c 'cd ~ && \
-                                       git clone https://github.com/mitmproxy/mitmproxy.git && \
+                                       git clone -b sni https://github.com/jarlob/mitmproxy.git && \
                                        cd mitmproxy && \
                                        python3 -m venv venv && \
                                        venv/bin/pip install -e ".[dev]" && \
