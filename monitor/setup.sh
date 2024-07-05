@@ -111,7 +111,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
                                                                               --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
                                                                               --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' \
                                                                               --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' \
-                                                                              `#>>/home/mitmproxyuser/out.txt 2>&1` &"
+                                                                              >>/home/mitmproxyuser/out.txt 2>&1 &"
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
