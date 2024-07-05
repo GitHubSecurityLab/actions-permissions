@@ -99,7 +99,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
                                                                               --showhost \
                                                                               `#--allow-hosts 'github.com'` \
                                                                               --set block_global=false \
-                                                                              -q \
+                                                                              `#-q` \
                                                                               -s /home/mitmproxyuser/mitm_plugin.py \
                                                                               --set output='/home/mitmproxyuser/out.txt' \
                                                                               --set token='$INPUT_TOKEN' \
@@ -108,7 +108,8 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
                                                                               --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' \
                                                                               --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
                                                                               --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' \
-                                                                              --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' &"
+                                                                              --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' \
+                                                                              >>/home/mitmproxyuser/out.txt 2>&1 &"
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
