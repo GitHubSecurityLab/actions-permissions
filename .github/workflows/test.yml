@@ -15,7 +15,7 @@ jobs:
         - ubuntu-latest
         # - ubuntu-20.04
         # - ubuntu-18.04
-        # - macos-latest
+        - macos-latest
         # - macos-11
         # - macos-10.15
         # - windows-latest
