@@ -7,12 +7,19 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   echo "runner ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
   sudo sysadminctl -addUser mitmproxyuser -admin
 
+  sudo -u mitmproxyuser -H bash -e -c 'cd /Users/mitmproxyuser && \
+                                       git clone -b main https://github.com/mitmproxy/mitmproxy.git && \
+                                       cd mitmproxy && \
+                                       git checkout 5353df5f1eeaf5fc36d9b5f7024199c888aed116 && \
+                                       python -m venv venv && \
+                                       venv/bin/pip install -e ".[dev]" '
+
   # install requests for mitm plugin
-  pip3 install mitmproxy requests
   sudo cp mitm_plugin.py /Users/mitmproxyuser/mitm_plugin.py
 
   # start mitmdump in simple mode for now to generate CA certificate
-  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && mitmdump &"
+  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && \
+                                       /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump &"
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
@@ -55,7 +62,24 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   echo "ALL ALL=NOPASSWD: /sbin/pfctl -s state" | sudo tee -a /etc/sudoers
 
   # finally, start mitmdump in transparent mode
-  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && mitmdump --mode transparent --showhost -q -s /Users/mitmproxyuser/mitm_plugin.py --set output='/Users/mitmproxyuser/out.txt' --set token='$INPUT_TOKEN' --set hosts='api.github.com,github.com' --set debug='$RUNNER_DEBUG' --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' &"
+  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
+          --mode transparent \
+          --showhost \
+          --allow-hosts '\bgithub\.com(:\d+)$' \
+          -q \
+          `#--set termlog_verbosity=debug` \
+          `#--set proxy_debug=true` \
+          -s /Users/mitmproxyuser/mitm_plugin.py \
+          --set output='/Users/mitmproxyuser/out.txt' \
+          --set token='$INPUT_TOKEN' \
+          --set hosts='api.github.com,github.com' \
+          --set debug='$RUNNER_DEBUG' \
+          --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' \
+          --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
+          --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' \
+          --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' \
+          &"
+          # >>/Users/mitmproxyuser/out.txt 2>&1
 
   # wait for mitmdump to start
   counter=0
@@ -73,23 +97,42 @@ if [ "$RUNNER_OS" = "macOS" ]; then
 
 elif [ "$RUNNER_OS" = "Linux" ]; then
 
-  sudo apt update
-  sudo apt install -y python3-pip software-properties-common
-
-  # install python 3.9, otherwise ubuntu installs 3.8 and we won't get the latest mitmproxy with important bug fixes
+  # install python 3.10, otherwise ubuntu 20.04 installs 3.8 and we won't get the latest mitmproxy with important bug fixes
   sudo add-apt-repository ppa:deadsnakes/ppa -y
-  sudo apt install -y python3.9 python3.9-distutils
+  sudo apt install -y python3.10-venv
 
   # create mitmproxyuser, otherwise proxy won't intercept local trafic from the same user
   sudo useradd --create-home mitmproxyuser
   sudo passwd -d mitmproxyuser
 
   # install mitmproxy
-  sudo cp get-pip.py /home/mitmproxyuser/get-pip.py
-  sudo -u mitmproxyuser -H bash -e -c 'cd ~ && python3.9 get-pip.py && ~/.local/bin/pip3.9 install --user mitmproxy'
+  sudo -u mitmproxyuser -H bash -e -c 'cd ~ && \
+                                       git clone -b main https://github.com/mitmproxy/mitmproxy.git && \
+                                       cd mitmproxy && \
+                                       git checkout 5353df5f1eeaf5fc36d9b5f7024199c888aed116 && \
+                                       python3.10 -m venv venv && \
+                                       venv/bin/pip install -e ".[dev]" '
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
-  sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && /home/mitmproxyuser/.local/bin/mitmdump --mode transparent --showhost --set block_global=false -q -s /home/mitmproxyuser/mitm_plugin.py --set output='/home/mitmproxyuser/out.txt' --set token='$INPUT_TOKEN' --set hosts='api.github.com,github.com' --set debug='$RUNNER_DEBUG' --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' &"
+  sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
+      /home/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
+          --mode transparent \
+          --showhost \
+          --allow-hosts '\bgithub\.com(:\d+)$' \
+          -q \
+          `#--set termlog_verbosity=debug` \
+          `#--set proxy_debug=true` \
+          -s /home/mitmproxyuser/mitm_plugin.py \
+          --set output='/home/mitmproxyuser/out.txt' \
+          --set token='$INPUT_TOKEN' \
+          --set hosts='api.github.com,github.com' \
+          --set debug='$RUNNER_DEBUG' \
+          --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' \
+          --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
+          --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' \
+          --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' \
+          &"
+          # >>/home/mitmproxyuser/out.txt 2>&1
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
