@@ -26,11 +26,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: GitHubSecurityLab/actions-permissions/monitor@main     
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       # test github-script CA
       - name: github-script
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const { data } = await github.rest.issues.listLabelsOnIssue({
