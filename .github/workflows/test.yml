@@ -12,9 +12,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
+        - ubuntu-latest # eventually will pick up the next version and test it
         - ubuntu-24.04 # beta
         - ubuntu-22.04 # ubuntu-latest 
         - ubuntu-20.04
+        - macos-latest # eventually will pick up the next version and test it
         - macos-14 # macos-latest
         - macos-13
         - macos-12
