@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-const artifacts = require('@actions/artifact');
+const {DefaultArtifactClient} = require('@actions/artifact')
 const crypto = require("crypto");
 const fs = require('fs');
 
@@ -105,7 +105,7 @@ async function run() {
       if (config.create_artifact) {
         const tempDirectory = process.env['RUNNER_TEMP'];
         fs.writeFileSync(`${tempDirectory}/permissions`, JSON.stringify(Object.fromEntries(permissions)));
-        await artifacts.create().uploadArtifact(
+        await new DefaultArtifactClient().uploadArtifact(
           `${process.env['GITHUB_JOB']}-permissions-${crypto.randomBytes(16).toString("hex")}`,
           [`${tempDirectory}/permissions`],
           tempDirectory,
