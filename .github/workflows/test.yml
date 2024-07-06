@@ -23,31 +23,8 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
-      
+      - uses: GitHubSecurityLab/actions-permissions/monitor@main     
       - uses: actions/checkout@v3
-      
-      # Docker build or pull needs CA fixup?
-      - run: |
-          cat <<EOF > Dockerfile
-          FROM node:18.16-bookworm-slim AS npm-builder
-
-          # Install Debian dependencies
-          RUN apt-get update -y && \
-              apt-get install -y build-essential git && \
-              apt-get clean && \
-              rm -f /var/lib/apt/lists/*_*
-
-          COPY LICENSE /
-          CMD ["cat LICENSE"]
-          EOF
-          docker build --rm --tag elixir_boilerplate:latest .
-          
-      - run: |
-          docker pull hello-world
-          docker run hello-world
-      
-      - run: docker pull quay.io/jetstack/cert-manager-controller:v1.8.2
       
       # test github-script CA
       - name: github-script
