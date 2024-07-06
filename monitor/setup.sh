@@ -38,8 +38,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   sudo security add-trusted-cert -d -p ssl -p basic -k /Library/Keychains/System.keychain /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem
   # sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem
   # curl doesn't use the system keychain, so we need to add the certificate to the openssl keychain
-  # TODO: get openssl dir with openssl version -a
-  sudo cat /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem >> /usr/local/etc/openssl@1.1/cert.pem
+  sudo cat /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem >> `openssl version -d | awk '{ gsub(/"/, "", $2); print $2 }'`/cert.pem
   # set environment variable for NodeJS to use the certificate
   echo "NODE_EXTRA_CA_CERTS=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Python requests library to use the certificate
