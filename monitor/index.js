@@ -29,6 +29,9 @@ async function run() {
       core.exportVariable('RUNNER_DEBUG', 1);
     }
 
+    console.log(`GITHUB_API_URL is ${process.env.GITHUB_SERVER_URL}`)
+    console.log(`GITHUB_API_URL is ${process.env.GITHUB_API_URL}`)
+
     const hosts = new Set();
     hosts.add('api.github.com');
     hosts.add('github.com');

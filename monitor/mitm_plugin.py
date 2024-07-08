@@ -248,9 +248,9 @@ class GHActionsProxy:
                     if id == 'issue_number':
                         url = ''
                         if path_segments[1] == 'repos':
-                            url = f'{ctx.options.GITHUB_API_URL}/repos/{path_segments[2]}}/{path_segments[3]}}/pulls/path_segments[5]'
+                            url = f'{ctx.options.GITHUB_API_URL}/repos/{path_segments[2]}/{path_segments[3]}/pulls/path_segments[5]'
                         elif path_segments[1] == 'repositories':
-                            url = f'{ctx.options.GITHUB_API_URL}/repositories/{path_segments[2]}}/pulls/path_segments[4]'
+                            url = f'{ctx.options.GITHUB_API_URL}/repositories/{path_segments[2]}/pulls/path_segments[4]'
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
@@ -262,9 +262,9 @@ class GHActionsProxy:
                     elif id == 'comment_id':
                         url = ''
                         if path_segments[1] == 'repos':
-                            url = f'{ctx.options.GITHUB_API_URL}/repos/{path_segments[2]}}/{path_segments[3]}/issues/comments/{path_segments[6]}}'
+                            url = f'{ctx.options.GITHUB_API_URL}/repos/{path_segments[2]}/{path_segments[3]}/issues/comments/{path_segments[6]}'
                         elif path_segments[1] == 'repositories':
-                            url = f'{ctx.options.GITHUB_API_URL}/repositories/{path_segments[2]}}/issues/comments/{path_segments[5]}}'
+                            url = f'{ctx.options.GITHUB_API_URL}/repositories/{path_segments[2]}/issues/comments/{path_segments[5]}'
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
