@@ -36,6 +36,7 @@ class GHActionsProxy:
 
         repo_path = 'repos' if '/' in repo else 'repositories'
         url = f'{ctx.options.GITHUB_API_URL}/{repo_path}/{repo}'
+        self.log_debug(f'url is: {url}')
         response = requests.get(url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
         if response.status_code == 200:
             self.repo_map[repo] = response.json()['private'] == False
@@ -490,8 +491,6 @@ class GHActionsProxy:
         if not bool(ctx.options.GITHUB_API_URL):
             print('error: GITHUB_API_URL is empty')
             sys.exit(1)
-
-        self.log_debug("GITHUB_API_URL: %s" % ctx.options.GITHUB_API_URL)
 
         self.id_token_request_url = None
         if bool(ctx.options.ACTIONS_ID_TOKEN_REQUEST_URL):
