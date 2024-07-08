@@ -62,14 +62,22 @@ async function analyze(name, count, token, owner, repo, branch) {
         continue;
       }
 
-      const logUploadMatch = log.data.match(/^.* Container for artifact \"(.*-permissions-[a-z0-9]+)\" successfully created\. Starting upload of file\(s\)$/m);
-      if (!logUploadMatch)
+      const logUploadMatch = log.data.match(/([^ "]+-permissions-[a-z0-9]{32})/m);
+      if (!logUploadMatch) {
+        if (process.env.RUNNER_DEBUG) {
+          console.log(`Cannot find the magic string. Skipping.`);
+        }
         continue;
+      }
       const artifactName = logUploadMatch[1];
+      if (process.env.RUNNER_DEBUG)
+        console.log(`Looking for artifactName ${artifactName}`);
       const jobName = artifactName.split('-').slice(0, -2).join('-');
 
       for (const artifact of artifacts.data.artifacts) {
         if (artifact.name === artifactName) {
+          if (process.env.RUNNER_DEBUG)
+            console.log(`Downloading artifact id ${artifact.id}`);
           const download = await octokit.rest.actions.downloadArtifact({
             owner: owner,
             repo: repo,
