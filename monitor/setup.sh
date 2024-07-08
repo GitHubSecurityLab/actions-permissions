@@ -80,7 +80,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
-          --allow-hosts $filter \
+          --allow-hosts '$filter' \
           -q \
           `#--set termlog_verbosity=debug` \
           `#--set proxy_debug=true` \
@@ -133,7 +133,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
       /home/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
-          --allow-hosts $filter \
+          --allow-hosts '$filter' \
           -q \
           `#--set termlog_verbosity=debug` \
           `#--set proxy_debug=true` \
