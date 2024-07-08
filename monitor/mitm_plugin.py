@@ -35,7 +35,7 @@ class GHActionsProxy:
             return self.repo_map[repo]
 
         repo_path = 'repos' if '/' in repo else 'repositories'
-        url = f'https://api.github.com/{repo_path}/{repo}'
+        url = f'{ctx.options.GITHUB_API_URL}/{repo_path}/{repo}'
         response = requests.get(url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
         if response.status_code == 200:
             self.repo_map[repo] = response.json()['private'] == False
@@ -248,11 +248,9 @@ class GHActionsProxy:
                     if id == 'issue_number':
                         url = ''
                         if path_segments[1] == 'repos':
-                            url = 'https://api.github.com/repos/%s/%s/pulls/%s' % (
-                                path_segments[2], path_segments[3], path_segments[5])
+                            url = f'{ctx.options.GITHUB_API_URL}/repos/{path_segments[2]}}/{path_segments[3]}}/pulls/path_segments[5]'
                         elif path_segments[1] == 'repositories':
-                            url = 'https://api.github.com/repositories/%s/pulls/%s' % (
-                                path_segments[2], path_segments[4])
+                            url = f'{ctx.options.GITHUB_API_URL}/repositories/{path_segments[2]}}/pulls/path_segments[4]'
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
@@ -264,11 +262,9 @@ class GHActionsProxy:
                     elif id == 'comment_id':
                         url = ''
                         if path_segments[1] == 'repos':
-                            url = 'https://api.github.com/repos/%s/%s/issues/comments/%s' % (
-                                path_segments[2], path_segments[3], path_segments[6])
+                            url = f'{ctx.options.GITHUB_API_URL}/repos/{path_segments[2]}}/{path_segments[3]}/issues/comments/{path_segments[6]}}'
                         elif path_segments[1] == 'repositories':
-                            url = 'https://api.github.com/repositories/%s/issues/comments/%s' % (
-                                path_segments[2], path_segments[5])
+                            url = f'{ctx.options.GITHUB_API_URL}/repositories/{path_segments[2]}}/issues/comments/{path_segments[5]}}'
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
@@ -285,11 +281,9 @@ class GHActionsProxy:
                     elif id == 'event_id':
                         url = ''
                         if path_segments[1] == 'repos':
-                            url = 'https://api.github.com/repos/%s/%s/issues/events/%s' % (
-                                path_segments[2], path_segments[3], path_segments[6])
+                            url = f'{ctx.options.GITHUB_API_URL}/repos/{path_segments[2]}/{path_segments[3]}/issues/events/{path_segments[6]}'
                         elif path_segments[1] == 'repositories':
-                            url = 'https://api.github.com/repositories/%s/issues/events/%s' % (
-                                path_segments[2], path_segments[5])
+                            url = f'{ctx.options.GITHUB_API_URL}/repositories/{path_segments[2]}/issues/events/{path_segments[5]}'
                         response = requests.get(
                             url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
                         self.log_debug(
