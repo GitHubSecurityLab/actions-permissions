@@ -2,7 +2,7 @@
 
 set -e
 
-echo "arguments: " $@
+echo "arguments: $@"
 
 if [ "$RUNNER_OS" = "macOS" ]; then
 
