@@ -2,6 +2,7 @@
 
 set -e
 
+# build the filter regex for mitmproxy --allow-hosts
 filter='\b('
 first=true
 IFS=',' read -ra args <<< "$@"
@@ -14,8 +15,6 @@ for arg in "${args[@]}"; do
   filter+=${arg//./\\.}
 done
 filter+=')(:\d+)?|$'
-
-echo "filter is $filter"
 
 if [ "$RUNNER_OS" = "macOS" ]; then
 
