@@ -451,6 +451,12 @@ class GHActionsProxy:
             default='',
             help='Comma delimited list of hosts to monitor',
         )
+        loader.add_option(
+            name='GITHUB_API_URL',
+            typespec=str,
+            default='',
+            help='GITHUB_API_URL environment variable',
+        )
 
     def log_debug(self, msg):
         if ctx.options.debug:
@@ -486,6 +492,12 @@ class GHActionsProxy:
         if not bool(ctx.options.GITHUB_REPOSITORY):
             print('error: GITHUB_REPOSITORY is empty')
             sys.exit(1)
+
+        if not bool(ctx.options.GITHUB_API_URL):
+            print('error: GITHUB_API_URL is empty')
+            sys.exit(1)
+
+        self.log_debug("GITHUB_API_URL: %s" % ctx.options.GITHUB_API_URL)
 
         self.id_token_request_url = None
         if bool(ctx.options.ACTIONS_ID_TOKEN_REQUEST_URL):

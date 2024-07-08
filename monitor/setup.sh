@@ -92,6 +92,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
           --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
           --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' \
           --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' \
+          --set GITHUB_API_URL='$GITHUB_API_URL' \
           &"
           # >>/Users/mitmproxyuser/out.txt 2>&1
 
@@ -145,6 +146,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
           --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
           --set GITHUB_REPOSITORY_ID='$GITHUB_REPOSITORY_ID' \
           --set GITHUB_REPOSITORY='$GITHUB_REPOSITORY' \
+          --set GITHUB_API_URL='$GITHUB_API_URL' \
           &"
           # >>/home/mitmproxyuser/out.txt 2>&1
 
