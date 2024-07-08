@@ -2,6 +2,8 @@
 
 set -e
 
+echo "arguments: " $@
+
 if [ "$RUNNER_OS" = "macOS" ]; then
 
   echo "runner ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
