@@ -2,7 +2,18 @@
 
 set -e
 
-echo "arguments: $@"
+filter='\b('
+first=true
+IFS=',' read -ra args <<< "$@"
+for arg in "${args[@]}"; do
+  if [ "$first" = true ] ; then
+    first=false
+  else
+    filter+='|'
+  fi
+  filter+=${arg//./\\.}
+done
+filter+=')(:\d+)?|$'
 
 if [ "$RUNNER_OS" = "macOS" ]; then
 
@@ -67,14 +78,14 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
-          --allow-hosts '\bgithub\.com(:\d+)$' \
+          --allow-hosts $filter \
           -q \
           `#--set termlog_verbosity=debug` \
           `#--set proxy_debug=true` \
           -s /Users/mitmproxyuser/mitm_plugin.py \
           --set output='/Users/mitmproxyuser/out.txt' \
           --set token='$INPUT_TOKEN' \
-          --set hosts='api.github.com,github.com' \
+          --set hosts=$@ \
           --set debug='$RUNNER_DEBUG' \
           --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' \
           --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \
@@ -120,14 +131,14 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
       /home/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
-          --allow-hosts '\bgithub\.com(:\d+)$' \
+          --allow-hosts $filter \
           -q \
           `#--set termlog_verbosity=debug` \
           `#--set proxy_debug=true` \
           -s /home/mitmproxyuser/mitm_plugin.py \
           --set output='/home/mitmproxyuser/out.txt' \
           --set token='$INPUT_TOKEN' \
-          --set hosts='api.github.com,github.com' \
+          --set hosts=$@ \
           --set debug='$RUNNER_DEBUG' \
           --set ACTIONS_ID_TOKEN_REQUEST_URL='$ACTIONS_ID_TOKEN_REQUEST_URL' \
           --set ACTIONS_ID_TOKEN_REQUEST_TOKEN='$ACTIONS_ID_TOKEN_REQUEST_TOKEN' \

@@ -36,7 +36,6 @@ async function run() {
       const host = process.env.ACTIONS_ID_TOKEN_REQUEST_URL.split('/')[2];
       hosts.add(host.toLowerCase());
     }
-    console.log(`hosts: ${hosts}`);
 
     if (!!core.getState('isPost')) {
 
