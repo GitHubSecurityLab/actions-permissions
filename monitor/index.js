@@ -29,6 +29,13 @@ async function run() {
       core.exportVariable('RUNNER_DEBUG', 1);
     }
 
+    const hosts = new Set();
+    hosts.add(process.env.GITHUB_SERVER_URL.split('/')[2].toLowerCase());
+    hosts.add(process.env.GITHUB_API_URL.split('/')[2].toLowerCase());
+    if (process.env.ACTIONS_ID_TOKEN_REQUEST_URL) {
+      hosts.add(process.env.ACTIONS_ID_TOKEN_REQUEST_URL.split('/')[2].toLowerCase());
+    }
+
     if (!!core.getState('isPost')) {
 
       let rootDir = '';
@@ -55,14 +62,6 @@ async function run() {
       }
 
       const results = JSON.parse(`[${data.trim().replace(/\r?\n|\r/g, ',')}]`);
-
-      const hosts = new Set();
-      hosts.add('api.github.com');
-      hosts.add('github.com');
-      if (process.env.ACTIONS_ID_TOKEN_REQUEST_URL) {
-        const host = process.env.ACTIONS_ID_TOKEN_REQUEST_URL.split('/')[2];
-        hosts.add(host.toLowerCase());
-      }
 
       let permissions = new Map();
       for (const result of results) {
@@ -117,7 +116,7 @@ async function run() {
       core.saveState('isPost', true)
       const { spawn } = require('child_process');
 
-      bashArgs = ['-e', 'setup.sh'];
+      bashArgs = ['-e', 'setup.sh', Array.from(hosts).join(",")];
       if (debug)
         bashArgs.unshift('-v');
 
