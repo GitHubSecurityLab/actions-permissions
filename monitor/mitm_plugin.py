@@ -40,6 +40,7 @@ class GHActionsProxy:
         response = requests.get(url, headers={'Authorization': 'Bearer %s' % ctx.options.token})
         if response.status_code == 200:
             self.repo_map[repo] = response.json()['private'] == False
+            self.log_debug(f'public: {self.repo_map[repo]}')
             return self.repo_map[repo]
         else:
             return False
