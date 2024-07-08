@@ -118,7 +118,7 @@ async function run() {
       core.saveState('isPost', true)
       const { spawn } = require('child_process');
 
-      bashArgs = ['-e', 'setup.sh', hosts.join(",")];
+      bashArgs = ['-e', 'setup.sh', Array.from(hosts).join(",")];
       if (debug)
         bashArgs.unshift('-v');
 
