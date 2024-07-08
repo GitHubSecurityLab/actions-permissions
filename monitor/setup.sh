@@ -15,6 +15,8 @@ for arg in "${args[@]}"; do
 done
 filter+=')(:\d+)?|$'
 
+echo "filter is $filter"
+
 if [ "$RUNNER_OS" = "macOS" ]; then
 
   echo "runner ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
