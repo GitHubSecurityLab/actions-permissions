@@ -29,15 +29,11 @@ async function run() {
       core.exportVariable('RUNNER_DEBUG', 1);
     }
 
-    console.log(`GITHUB_API_URL is ${process.env.GITHUB_SERVER_URL}`)
-    console.log(`GITHUB_API_URL is ${process.env.GITHUB_API_URL}`)
-
     const hosts = new Set();
-    hosts.add('api.github.com');
-    hosts.add('github.com');
+    hosts.add(process.env.GITHUB_SERVER_URL.split('/')[2].toLowerCase());
+    hosts.add(process.env.GITHUB_API_URL.split('/')[2].toLowerCase());
     if (process.env.ACTIONS_ID_TOKEN_REQUEST_URL) {
-      const host = process.env.ACTIONS_ID_TOKEN_REQUEST_URL.split('/')[2];
-      hosts.add(host.toLowerCase());
+      hosts.add(process.env.ACTIONS_ID_TOKEN_REQUEST_URL.split('/')[2].toLowerCase());
     }
 
     if (!!core.getState('isPost')) {
