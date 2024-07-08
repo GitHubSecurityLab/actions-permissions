@@ -74,7 +74,7 @@ async function run() {
           const perm = p[kind];
 
           if (kind === 'unknown') {
-            console.log(`The github token was used to call ${result.method} ${result.host}${result.path} but the permission is unknown. Please report this to the action author.`);
+            core.warning(`The github token was used to call ${result.method} ${result.host}${result.path} but the permission is unknown. Please report this to the action author.`);
             wasUnknown = true;
             continue;
           }
@@ -136,7 +136,7 @@ async function run() {
         }
       })
       command.stderr.on('data', output => {
-        console.log(output.toString())
+        core.warning(output.toString())
       })
       command.on('exit', code => {
         if (code !== 0) {
