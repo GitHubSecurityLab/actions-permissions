@@ -66,10 +66,12 @@ async function analyze(name, count, token, owner, repo, branch) {
       if (!logUploadMatch)
         continue;
       const artifactName = logUploadMatch[1];
+      console.log(`Looking for artifactName ${artifactName}`);
       const jobName = artifactName.split('-').slice(0, -2).join('-');
 
       for (const artifact of artifacts.data.artifacts) {
         if (artifact.name === artifactName) {
+          console.log(`Downloading artifact id ${artifact.id}`);
           const download = await octokit.rest.actions.downloadArtifact({
             owner: owner,
             repo: repo,
