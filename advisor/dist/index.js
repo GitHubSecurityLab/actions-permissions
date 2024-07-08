@@ -34023,11 +34023,10 @@ async function analyze(name, count, token, owner, repo, branch) {
         continue;
       }
 
-      const logUploadMatch = log.data.match(/^.* Artifact (.*-permissions-[a-z0-9]+)\.zip successfully finalized\. Artifact ID \d+$/m);
+      const logUploadMatch = log.data.match(/([^ "]+-permissions-[a-z0-9]{32})/m);
       if (!logUploadMatch) {
         if (process.env.RUNNER_DEBUG) {
           console.log(`Cannot find the magic string. Skipping.`);
-          //console.log(log.data);
         }
         continue;
       }
