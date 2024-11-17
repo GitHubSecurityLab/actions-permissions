@@ -24,7 +24,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   sudo -u mitmproxyuser -H bash -e -c 'cd /Users/mitmproxyuser && \
                                        git clone -b main https://github.com/mitmproxy/mitmproxy.git && \
                                        cd mitmproxy && \
-                                       git checkout 5353df5f1eeaf5fc36d9b5f7024199c888aed116 && \
+                                       git checkout f87ec2235968acd688a378e7c1ed7e07d9bce43e && \
                                        python -m venv venv && \
                                        venv/bin/pip install -e ".[dev]" '
 
