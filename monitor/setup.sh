@@ -22,18 +22,15 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   sudo sysadminctl -addUser mitmproxyuser -admin
 
   sudo -u mitmproxyuser -H bash -e -c 'cd /Users/mitmproxyuser && \
-                                       git clone -b main https://github.com/mitmproxy/mitmproxy.git && \
-                                       cd mitmproxy && \
-                                       git checkout f87ec2235968acd688a378e7c1ed7e07d9bce43e && \
                                        python -m venv venv && \
-                                       venv/bin/pip install -e ".[dev]" '
+                                       venv/bin/pip install "mitmproxy>=10.4.0" requests'
 
   # install requests for mitm plugin
   sudo cp mitm_plugin.py /Users/mitmproxyuser/mitm_plugin.py
 
   # start mitmdump in simple mode for now to generate CA certificate
   sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && \
-                                       /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump &"
+                                       /Users/mitmproxyuser/venv/bin/mitmdump &"
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
@@ -76,7 +73,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   echo "ALL ALL=NOPASSWD: /sbin/pfctl -s state" | sudo tee -a /etc/sudoers
 
   # finally, start mitmdump in transparent mode
-  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
+  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && /Users/mitmproxyuser/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
           --allow-hosts '$filter' \
@@ -129,15 +126,12 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
 
   # install mitmproxy
   sudo -u mitmproxyuser -H bash -e -c 'cd ~ && \
-                                       git clone -b main https://github.com/mitmproxy/mitmproxy.git && \
-                                       cd mitmproxy && \
-                                       git checkout 5353df5f1eeaf5fc36d9b5f7024199c888aed116 && \
                                        "$(command -v python3.10 || command -v python3)" -m venv venv && \
-                                       venv/bin/pip install -e ".[dev]" '
+                                       venv/bin/pip install "mitmproxy>=10.4.0" requests'
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
   sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
-      /home/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
+      /home/mitmproxyuser/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
           --allow-hosts '$filter' \
