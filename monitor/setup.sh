@@ -23,7 +23,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
 
   sudo -u mitmproxyuser -H bash -e -c 'cd /Users/mitmproxyuser && \
                                        python -m venv venv && \
-                                       venv/bin/pip install "mitmproxy>=10.4.0" requests'
+                                       venv/bin/pip install mitmproxy==11.0.0 requests==2.32.3'
 
   # install requests for mitm plugin
   sudo cp mitm_plugin.py /Users/mitmproxyuser/mitm_plugin.py
@@ -127,7 +127,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   # install mitmproxy
   sudo -u mitmproxyuser -H bash -e -c 'cd ~ && \
                                        "$(command -v python3.10 || command -v python3)" -m venv venv && \
-                                       venv/bin/pip install "mitmproxy>=10.4.0" requests'
+                                       venv/bin/pip install mitmproxy==11.0.0 requests==2.32.3'
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
   sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
