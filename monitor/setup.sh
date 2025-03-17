@@ -111,13 +111,14 @@ if [ "$RUNNER_OS" = "macOS" ]; then
 
 elif [ "$RUNNER_OS" = "Linux" ]; then
 
-  # ubuntu 22.04 and later install python 3.10 or later by default
+  # ubuntu 24.04 and later install python 3.12 or later by default
   python_package="python3"
 
-  # install python 3.10, otherwise ubuntu 20.04 installs 3.8 and we won't get the latest mitmproxy with important bug fixes
-  if (( "$(lsb_release --short --release | cut --delimiter='.' --fields=1)" < 22 )); then
+  # install python 3.12, otherwise ubuntu 20.04 installs 3.8 and ubuntu 22.04 installs
+  # 3.10 so we won't get the latest mitmproxy with important bug fixes
+  if (( "$(lsb_release --short --release | cut --delimiter='.' --fields=1)" < 24 )); then
     sudo add-apt-repository ppa:deadsnakes/ppa -y
-    python_package="python3.10"
+    python_package="python3.12"
   fi
 
   sudo apt install -y "$python_package"-venv
@@ -128,7 +129,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
 
   # install mitmproxy
   sudo -u mitmproxyuser -H bash -e -c 'cd ~ && \
-                                       "$(command -v python3.10 || command -v python3)" -m venv venv && \
+                                       "$(command -v python3.12 || command -v python3)" -m venv venv && \
                                        venv/bin/pip install mitmproxy==11.0.0 requests==2.32.3'
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
