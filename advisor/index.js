@@ -118,11 +118,12 @@ async function run(token, name, count, owner, repo, branch, format) {
   let summary = core.summary.addHeading(`Minimal required permissions for ${name}:`);
   log(`Minimal required permissions for ${name}:`);
 
-  if (wasUnknown) {
-    summary.addRaw("\nAt least one call wasn't recognized. Some permissions are unknown. Check the workflow runs.\n");
-  }
-
   try {
+    if (wasUnknown) {
+      summary.addRaw("\nAt least one call wasn't recognized. Some permissions are unknown. Check the workflow runs.\n");
+      throw new Error("At least one call wasn't recognized. Some permissions are unknown. Check the workflow runs.");
+    }
+
     if (permissions.size === 0) {
       summary = summary.addRaw('No permissions logs were found.');
       throw new Error('No permissions logs were found.');
