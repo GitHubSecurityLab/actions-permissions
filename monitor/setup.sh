@@ -50,15 +50,17 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   pid=$(sudo lsof -i -P -n 2>/dev/null | sed -En "s/Python *([0-9]*) *mitmproxyuser *.*TCP \*:8080 \(LISTEN\)/\1/p" | head -1)
   sudo kill $pid
 
-  echo "install mitmproxy certificate as CA..."
+  echo "sudo security authorizationdb write com.apple.trust-settings.admin allow..."
   # install mitmproxy certificate as CA
   # disable any GUI prompts for certificate installation
   sudo security authorizationdb write com.apple.trust-settings.admin allow
   # the command itself may run https requests, this is why we didn't setup transparent proxy yet
   # TODO: check if -r trustRoot is needed
+  echo "sudo security add-trusted-cert -d -p ssl -p basic -k /Library/Keychains/System.keychain /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem..."
   sudo security add-trusted-cert -d -p ssl -p basic -k /Library/Keychains/System.keychain /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem
   # sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem
   # curl doesn't use the system keychain, so we need to add the certificate to the openssl keychain
+  echo "sudo cat /Users..."
   sudo cat /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem >> `openssl version -d | awk '{ gsub(/"/, "", $2); print $2 }'`/cert.pem
   # set environment variable for NodeJS to use the certificate
   echo "NODE_EXTRA_CA_CERTS=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
@@ -69,6 +71,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   # set environment variable for AWS tools
   echo "AWS_CA_BUNDLE=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
 
+  echo "Enable IP forwarding."
   # Enable IP forwarding.
   sudo sysctl -w net.inet.ip.forwarding=1
   # Configure pf with the rules and enable it
