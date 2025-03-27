@@ -40,14 +40,17 @@ if [ "$RUNNER_OS" = "macOS" ]; then
     sleep 1
     counter=$((counter+1))
     if [ $counter -gt 10 ]; then
+      echo "10 seconds passed..."
       exit 1
     fi
   done
 
+  echo "kill mitmdump..."
   # kill mitmdump, we'll start it again in transparent mode
   pid=$(sudo lsof -i -P -n 2>/dev/null | sed -En "s/Python *([0-9]*) *mitmproxyuser *.*TCP \*:8080 \(LISTEN\)/\1/p" | head -1)
   sudo kill $pid
 
+  echo "install mitmproxy certificate as CA..."
   # install mitmproxy certificate as CA
   # disable any GUI prompts for certificate installation
   sudo security authorizationdb write com.apple.trust-settings.admin allow
