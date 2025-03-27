@@ -14,7 +14,7 @@ jobs:
         os:
         - ubuntu-latest # eventually will pick up the next version and test it
         - ubuntu-24.04 # beta
-        - ubuntu-22.04 # ubuntu-latest 
+        - ubuntu-22.04 # ubuntu-latest
         - ubuntu-20.04
         - macos-latest # eventually will pick up the next version and test it
         - macos-14 # macos-latest
@@ -25,9 +25,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@main     
+      - uses: GitHubSecurityLab/actions-permissions/monitor@main
       - uses: actions/checkout@v4
-      
+
       # test github-script CA
       - name: github-script
         uses: actions/github-script@v7
@@ -38,7 +38,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-            
+
       # test gh CA
       - name: gh api
         env:

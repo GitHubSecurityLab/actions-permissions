@@ -14,8 +14,8 @@ on:
       count:
         description: 'How many last runs to analyze'
         required: false
-        type: number
-        default: 10
+        type: string
+        default: "10"
 
 jobs:
   advisor:
@@ -24,4 +24,4 @@ jobs:
     - uses: GitHubSecurityLab/actions-permissions/advisor@v1
       with:
         name: ${{ inputs.name }}
-        count: ${{ inputs.count }}
+        count: ${{ fromJSON(inputs.count) }}

@@ -22,18 +22,15 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   sudo sysadminctl -addUser mitmproxyuser -admin
 
   sudo -u mitmproxyuser -H bash -e -c 'cd /Users/mitmproxyuser && \
-                                       git clone -b main https://github.com/mitmproxy/mitmproxy.git && \
-                                       cd mitmproxy && \
-                                       git checkout 5353df5f1eeaf5fc36d9b5f7024199c888aed116 && \
                                        python -m venv venv && \
-                                       venv/bin/pip install -e ".[dev]" '
+                                       venv/bin/pip install mitmproxy==11.0.0 requests==2.32.3'
 
   # install requests for mitm plugin
   sudo cp mitm_plugin.py /Users/mitmproxyuser/mitm_plugin.py
 
   # start mitmdump in simple mode for now to generate CA certificate
   sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && \
-                                       /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump &"
+                                       /Users/mitmproxyuser/venv/bin/mitmdump &"
 
   # wait for mitmdump to start and generate CA certificate
   counter=0
@@ -66,6 +63,8 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   echo "REQUESTS_CA_BUNDLE=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Elixir Hex package manager to use the certificate
   echo "HEX_CACERTS_PATH=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # set environment variable for AWS tools
+  echo "AWS_CA_BUNDLE=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
 
   # Enable IP forwarding.
   sudo sysctl -w net.inet.ip.forwarding=1
@@ -76,7 +75,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   echo "ALL ALL=NOPASSWD: /sbin/pfctl -s state" | sudo tee -a /etc/sudoers
 
   # finally, start mitmdump in transparent mode
-  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && /Users/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
+  sudo -u mitmproxyuser -H bash -e -c "cd /Users/mitmproxyuser && /Users/mitmproxyuser/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
           --allow-hosts '$filter' \
@@ -112,9 +111,16 @@ if [ "$RUNNER_OS" = "macOS" ]; then
 
 elif [ "$RUNNER_OS" = "Linux" ]; then
 
+  # ubuntu 22.04 and later install python 3.10 or later by default
+  python_package="python3"
+
   # install python 3.10, otherwise ubuntu 20.04 installs 3.8 and we won't get the latest mitmproxy with important bug fixes
-  sudo add-apt-repository ppa:deadsnakes/ppa -y
-  sudo apt install -y python3.10-venv
+  if (( "$(lsb_release --short --release | cut --delimiter='.' --fields=1)" < 22 )); then
+    sudo add-apt-repository ppa:deadsnakes/ppa -y
+    python_package="python3.10"
+  fi
+
+  sudo apt install -y "$python_package"-venv
 
   # create mitmproxyuser, otherwise proxy won't intercept local trafic from the same user
   sudo useradd --create-home mitmproxyuser
@@ -122,15 +128,12 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
 
   # install mitmproxy
   sudo -u mitmproxyuser -H bash -e -c 'cd ~ && \
-                                       git clone -b main https://github.com/mitmproxy/mitmproxy.git && \
-                                       cd mitmproxy && \
-                                       git checkout 5353df5f1eeaf5fc36d9b5f7024199c888aed116 && \
-                                       python3.10 -m venv venv && \
-                                       venv/bin/pip install -e ".[dev]" '
+                                       "$(command -v python3.10 || command -v python3)" -m venv venv && \
+                                       venv/bin/pip install mitmproxy==11.0.0 requests==2.32.3'
 
   sudo cp mitm_plugin.py /home/mitmproxyuser/mitm_plugin.py
   sudo -u mitmproxyuser -H bash -e -c "cd /home/mitmproxyuser && \
-      /home/mitmproxyuser/mitmproxy/venv/bin/mitmdump \
+      /home/mitmproxyuser/venv/bin/mitmdump \
           --mode transparent \
           --showhost \
           --allow-hosts '$filter' \
@@ -174,6 +177,8 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   echo "REQUESTS_CA_BUNDLE=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Elixir Hex package manager to use the certificate
   echo "HEX_CACERTS_PATH=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # set environment variable for AWS tools
+  echo "AWS_CA_BUNDLE=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
 
   # setup global redirection
   sudo sysctl -w net.ipv4.ip_forward=1
