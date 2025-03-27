@@ -231,9 +231,9 @@ class GHActionsProxy:
                 # todo: 
                 # https://github.com/graphql-python/graphql-core/blob/main/docs/usage/parser.rst
                 # https://docs.github.com/en/graphql/guides/forming-calls-with-graphql
-                self.log_debug(body)
+                self.log_debug(f"body: {body}")
                 gql = graphql_parse(body, no_location=True)
-                self.log_debug(gql)
+                self.log_debug(f"gql: {gql}")
                 return []
 
         # First try to find the permission in the tree of special cases
