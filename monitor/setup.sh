@@ -36,7 +36,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   counter=0
   while [ ! -f /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem ]
   do
-    echo "waiting for mitmdump to generate the certificate..."
+    echo "Mac: waiting for mitmdump to generate the certificate..."
     sleep 1
     counter=$((counter+1))
     if [ $counter -gt 10 ]; then
