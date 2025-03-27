@@ -30,6 +30,8 @@ jobs:
     steps:
       - uses: GitHubSecurityLab/actions-permissions/monitor@main
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       # test github-script CA
       - name: github-script
