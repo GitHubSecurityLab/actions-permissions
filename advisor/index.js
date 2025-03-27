@@ -2,8 +2,12 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const AdmZip = require('adm-zip');
 
+let verbose = false;
+let log = null;
+let debug = (msg) => { if (verbose) { log(msg); } }
+
 async function analyze(name, count, token, owner, repo, branch) {
-  console.log(`Analyzing ${name} for the last ${count} successful runs.\n`);
+  log(`Analyzing ${name} for the last ${count} successful runs.\n`);
   const octokit = github.getOctokit(token)
 
   const runs = await octokit.rest.actions.listWorkflowRuns({
@@ -19,8 +23,7 @@ async function analyze(name, count, token, owner, repo, branch) {
   let permissions = new Map();
 
   for (const run of runs.data.workflow_runs) {
-    if (process.env.RUNNER_DEBUG)
-      console.log(`Analyzing run ${run.id}...`);
+    debug(`Analyzing run ${run.id}...`);
 
     const jobs = await octokit.rest.actions.listJobsForWorkflowRun({
       owner: owner,
@@ -28,8 +31,7 @@ async function analyze(name, count, token, owner, repo, branch) {
       run_id: run.id,
     });
 
-    if (process.env.RUNNER_DEBUG)
-      console.log(`Found ${jobs.data.jobs.length} jobs.`)
+    debug(`Found ${jobs.data.jobs.length} jobs.`)
 
     const artifacts = await octokit.rest.actions.listWorkflowRunArtifacts({
       owner: owner,
@@ -37,47 +39,39 @@ async function analyze(name, count, token, owner, repo, branch) {
       run_id: run.id,
     });
 
-    if (process.env.RUNNER_DEBUG)
-      console.log(`${artifacts.data.artifacts.length} artifacts...`)
+    debug(`${artifacts.data.artifacts.length} artifacts...`)
 
     for (const job of jobs.data.jobs) {
       if (job.conclusion !== 'success')
         continue;
 
-      if (process.env.RUNNER_DEBUG) {
-        console.log(`${job.name} ${job.id} was successful...`);
-        console.log(`Downloading logs for job id ${job.id}...`);
-      }
+      debug(`${job.name} ${job.id} was successful...`);
+      debug(`Downloading logs for job id ${job.id}...`);
 
-      let log = null;
+      let workflowRunLog = null;
       try {
-        log = await octokit.rest.actions.downloadJobLogsForWorkflowRun({
+        workflowRunLog = await octokit.rest.actions.downloadJobLogsForWorkflowRun({
           owner: owner,
           repo: repo,
           job_id: job.id,
         });
       } catch (e) {
-        if (process.env.RUNNER_DEBUG)
-          console.log(`Logs for the job ${job.id} are not available.`);
+        debug(`Logs for the job ${job.id} are not available.`);
         continue;
       }
 
-      const logUploadMatch = log.data.match(/([^ "]+-permissions-[a-z0-9]{32})/m);
+      const logUploadMatch = workflowRunLog.data.match(/([^ "]+-permissions-[a-z0-9]{32})/m);
       if (!logUploadMatch) {
-        if (process.env.RUNNER_DEBUG) {
-          console.log(`Cannot find the magic string. Skipping.`);
-        }
+        debug(`Cannot find the magic string. Skipping.`);
         continue;
       }
       const artifactName = logUploadMatch[1];
-      if (process.env.RUNNER_DEBUG)
-        console.log(`Looking for artifactName ${artifactName}`);
+      debug(`Looking for artifactName ${artifactName}`);
       const jobName = artifactName.split('-').slice(0, -2).join('-');
 
       for (const artifact of artifacts.data.artifacts) {
         if (artifact.name === artifactName) {
-          if (process.env.RUNNER_DEBUG)
-            console.log(`Downloading artifact id ${artifact.id}`);
+          debug(`Downloading artifact id ${artifact.id}`);
           const download = await octokit.rest.actions.downloadArtifact({
             owner: owner,
             repo: repo,
@@ -112,58 +106,101 @@ async function analyze(name, count, token, owner, repo, branch) {
   return permissions;
 }
 
-async function run(name, count, token, owner, repo, branch) {
+async function run(token, name, count, owner, repo, branch, format) {
   const permissions = await analyze(name, count, token, owner, repo, branch);
 
   let summary = core.summary.addHeading(`Minimal required permissions for ${name}:`);
-  console.log(`Minimal required permissions for ${name}:`);
+  log(`Minimal required permissions for ${name}:`);
 
-  if (permissions.size === 0) {
-    summary = summary.addRaw('No permissions logs were found.');
-    console.log('No permissions logs were found.');
-  } else {
-    for (const [jobName, jobPermissions] of permissions) {
-      summary = summary.addHeading(`${jobName}:`, 2);
-      console.log(`---------------------= ${jobName} =---------------------`);
+  try {
+    if (permissions.size === 0) {
+      summary = summary.addRaw('No permissions logs were found.');
+      throw new Error('No permissions logs were found.');
+    } else {
+      let additionalIndent = '';
+      if (format)
+        additionalIndent = '  ';
 
-      let codeBlock = '';
-      if (jobPermissions.size === 0) {
-        codeBlock += 'permissions: {}';
-        console.log('permissions: {}');
-      } else {
-        codeBlock += 'permissions:\n';
-        console.log('permissions:');
-        for (const [kind, perm] of jobPermissions) {
-          codeBlock += `  ${kind}: ${perm}\n`;
-          console.log(`  ${kind}: ${perm}`);
+      for (const [jobName, jobPermissions] of permissions) {
+        summary = summary.addHeading(`${jobName}:`, 2);
+        log(`---------------------= ${jobName} =---------------------`);
+        if (format)
+          console.log(`${jobName}:`);
+
+        let codeBlock = '';
+        if (jobPermissions.size === 0) {
+          codeBlock += `${additionalIndent}permissions: {}`;
+        } else {
+          codeBlock += `${additionalIndent}permissions:\n`;
+          for (const [kind, perm] of jobPermissions) {
+            codeBlock += `${additionalIndent}  ${kind}: ${perm}\n`;
+          }
         }
+  
+        console.log(codeBlock); // write always
+        summary = summary.addCodeBlock(codeBlock, 'yaml');
       }
-
-      summary = summary.addCodeBlock(codeBlock, 'yaml');
+    }
+  } finally {
+    if (process.env.GITHUB_ACTIONS) {
+      await summary.write();
     }
   }
-
-  if (process.env.GITHUB_ACTIONS) {
-    await summary.write();
-  }
 }
 
-if (!process.env.GITHUB_ACTIONS && process.argv.length !== 7) {
-  console.log('Usage: node index.js <number_of_the_last_runs> <github_owner> <repo_name> <branch_name>');
-  console.log('For example: node index.js ci.yml 10 github actions-permissions main');
+function printUsageAndExit() {
+  console.log('Usage: node index.js <number_of_the_last_runs> <github_owner> <repo_name> <branch_name> [--format yaml] [--verbose]');
+  console.log('For example: node index.js ci.yml 10 github actions-permissions main --format yaml --verbose');
   process.exit(1);
 }
+
+verbose = false;
+log = console.log;
 
 if (process.env.GITHUB_ACTIONS) {
   const name = core.getInput('name');
   const count = core.getInput('count');
   const token = core.getInput('token');
+  verbose = process.env.RUNNER_DEBUG ? true : false;
+  const branch = github.context.ref.split('/').slice(-1)[0];
+  const format = null;
 
-  run(name, count, token, github.context.repo.owner, github.context.repo.repo, github.context.ref.split('/').slice(-1)[0]).catch(error => {
+  run(token, name, count, github.context.repo.owner, github.context.repo.repo, branch, format).catch(error => {
     core.setFailed(error.message);
   });
 } else {
-  run(process.argv[2], process.argv[3], process.env.GITHUB_TOKEN, process.argv[4], process.argv[5], process.argv[6]).catch(error => {
-    console.log(`Error: ${error.message}`);
+  const args = process.argv.slice(2);
+  const outputIndex = args.indexOf('--format');
+  let format = null;
+
+  if (outputIndex !== -1) {
+    if (outputIndex + 1 >= args.length) {
+      printUsageAndExit();
+    }
+    format = args[outputIndex + 1];
+    if (!format || format !== 'yaml') {
+      printUsageAndExit();
+    }
+    args.splice(outputIndex, 2); // Remove --output and its value from args
+  }
+
+  const debugIndex = args.indexOf('--verbose');
+  if (debugIndex !== -1) {
+    verbose = true;
+    args.splice(debugIndex, 1); // Remove --verbose from args
+  }
+
+  if (args.length !== 5) {
+    printUsageAndExit();
+  }
+
+  const [name, count, owner, repo, branch] = args;
+  if (format !== null) {
+    log = () => {};
+  }
+
+  run(process.env.GITHUB_TOKEN, name, count, owner, repo, branch, format).catch(error => {
+    console.error(`Error: ${error.message}`);
+    exit(2);
   });
 }
