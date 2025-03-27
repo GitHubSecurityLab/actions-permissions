@@ -231,6 +231,7 @@ class GHActionsProxy:
                 # todo: 
                 # https://github.com/graphql-python/graphql-core/blob/main/docs/usage/parser.rst
                 # https://docs.github.com/en/graphql/guides/forming-calls-with-graphql
+                self.log_debug(body)
                 gql = graphql_parse(body, no_location=True)
                 self.log_debug(gql)
                 return []
