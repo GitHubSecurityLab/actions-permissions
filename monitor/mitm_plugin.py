@@ -514,7 +514,7 @@ class GHActionsProxy:
 
         return token in header
 
-    def requestheaders(self, flow):
+    def request(self, flow):
         try:
             url_parts = urlsplit(flow.request.url)
             parsed_url = urlparse(flow.request.url)
@@ -547,8 +547,11 @@ class GHActionsProxy:
                     self.log_debug('The request contains an authorization header')
                     if self.contains_token(v, ctx.options.token):
                         if hostname in self.ip_map or hostname in self.dns_map:
+                            body = None
+                            if flow.request.content:
+                                body = flow.request.get_text(strict=False)
                             permissions = self.get_permission(
-                                url_parts.path, flow.request.method, parse_qs(parsed_url.query), flow.request.text)
+                                url_parts.path, flow.request.method, parse_qs(parsed_url.query), body)
                             self.write_json(permissions, flow.request.method, hostname, url_parts.path)
                     elif self.id_token_request_token and self.contains_token(v, self.id_token_request_token):
                         if self.id_token_request_url and flow.request.method == 'GET' and hostname == self.id_token_request_url.hostname.lower() and url_parts.path.lower() == self.id_token_request_url.path.lower():
