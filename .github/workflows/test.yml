@@ -28,7 +28,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set debug logging
-        if: ${{ inputs.enable_debug == 'true' }}
+        if: inputs.enable_debug
         run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
 
       # test github-script CA
