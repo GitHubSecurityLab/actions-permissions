@@ -23,7 +23,7 @@ async function run() {
     if (!config.enabled)
       return;
 
-    const debug = core.getInput('debug').toUpperCase() === 'TRUE' || config.debug || process.env.RUNNER_DEBUG;
+    const debug = core.getInput('debug').toUpperCase() === 'TRUE' || core.getInput('debug') || config.debug || process.env.RUNNER_DEBUG;
     if (debug) {
       // for the bash script
       core.exportVariable('RUNNER_DEBUG', 1);

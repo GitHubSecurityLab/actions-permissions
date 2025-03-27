@@ -23,13 +23,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: GitHubSecurityLab/actions-permissions/monitor@graphql
+        with:
+          debug: ${{ github.event.inputs.enable_debug }}
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-
-      - name: Set debug logging
-        if: inputs.enable_debug
-        run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
 
       # test github-script CA
       - name: github-script
