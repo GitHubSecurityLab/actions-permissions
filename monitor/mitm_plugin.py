@@ -220,7 +220,6 @@ class GHActionsProxy:
 
     def get_permission(self, path, method, query, body):
         path_segments = path.split('/')
-        print(f"test: {path_segments}")
 
         if len(path_segments) >= 3:
             if path_segments[1] == 'repos' and not self.same_repository(path_segments[2], path_segments[3]):
@@ -232,9 +231,9 @@ class GHActionsProxy:
                 # todo: 
                 # https://github.com/graphql-python/graphql-core/blob/main/docs/usage/parser.rst
                 # https://docs.github.com/en/graphql/guides/forming-calls-with-graphql
-                print(f"body: {body}")
+                self.log_debug(f"body: {body}")
                 gql = graphql_parse(body, no_location=True)
-                print(f"gql: {gql}")
+                self.log_debug(f"gql: {gql}")
                 return []
 
         # First try to find the permission in the tree of special cases
