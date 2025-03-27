@@ -27,9 +27,6 @@ async function run() {
     if (debug) {
       // for the bash script
       core.exportVariable('RUNNER_DEBUG', 1);
-      
-      core.exportVariable('ACTIONS_STEP_DEBUG', true);
-      core.exportVariable('ACTIONS_RUNNER_DEBUG', true);
     }
 
     const hosts = new Set();
