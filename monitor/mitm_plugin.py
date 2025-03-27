@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from mitmproxy import ctx
-from graphql.parse import graphql_parse
+from graphql import parse as graphql_parse
 
 
 class HTTP(Enum):
@@ -228,7 +228,9 @@ class GHActionsProxy:
             if path_segments[1] == 'repositories' and not self.same_repository(path_segments[2]):
                 return []
             if path_segments[1] == 'graphql':
-                # todo: use https://github.com/graphql-python/graphql-core/blob/main/docs/usage/parser.rst
+                # todo: 
+                # https://github.com/graphql-python/graphql-core/blob/main/docs/usage/parser.rst
+                # https://docs.github.com/en/graphql/guides/forming-calls-with-graphql
                 gql = graphql_parse(body, no_location=True)
                 self.log_debug(gql)
                 return []
