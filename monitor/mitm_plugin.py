@@ -220,6 +220,7 @@ class GHActionsProxy:
 
     def get_permission(self, path, method, query, body):
         path_segments = path.split('/')
+        print(f"test: {path_segments}")
 
         if len(path_segments) >= 3:
             if path_segments[1] == 'repos' and not self.same_repository(path_segments[2], path_segments[3]):
