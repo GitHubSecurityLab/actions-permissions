@@ -548,7 +548,7 @@ class GHActionsProxy:
                     if self.contains_token(v, ctx.options.token):
                         if hostname in self.ip_map or hostname in self.dns_map:
                             permissions = self.get_permission(
-                                url_parts.path, flow.request.method, parse_qs(parsed_url.query), flow.request.content)
+                                url_parts.path, flow.request.method, parse_qs(parsed_url.query), flow.request.text)
                             self.write_json(permissions, flow.request.method, hostname, url_parts.path)
                     elif self.id_token_request_token and self.contains_token(v, self.id_token_request_token):
                         if self.id_token_request_url and flow.request.method == 'GET' and hostname == self.id_token_request_url.hostname.lower() and url_parts.path.lower() == self.id_token_request_url.path.lower():
