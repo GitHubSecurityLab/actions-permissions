@@ -12,19 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - ubuntu-24.04-arm # public preview
-        - ubuntu-22.04-arm # public preview
         - ubuntu-latest # eventually will pick up the next version and test it
-        - ubuntu-24.04 # ubuntu-latest
-        - ubuntu-22.04
-        - ubuntu-20.04
-        - macos-latest # eventually will pick up the next version and test it
-        - macos-15 # public preview
-        - macos-14 # macos-latest
-        - macos-13
-        #- windows-2025 # public preview
-        #- windows-2022 # windows-latest
-        #- windows-2019
 
     runs-on: ${{ matrix.os }}
     steps:
