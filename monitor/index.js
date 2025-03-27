@@ -64,6 +64,7 @@ async function run() {
       const results = JSON.parse(`[${data.trim().replace(/\r?\n|\r/g, ',')}]`);
 
       let permissions = new Map();
+      let wasUnknown = false;
       for (const result of results) {
         if (!hosts.has(result.host.toLowerCase()))
           continue;
@@ -73,7 +74,9 @@ async function run() {
           const perm = p[kind];
 
           if (kind === 'unknown') {
-            console.log(`The github token was used to call ${result.method} ${result.host}${result.path} but the permission is unknown. Please report this to the action author.`);
+            core.warning(`The github token was used to call ${result.method} ${result.host}${result.path} but the permission is unknown. Please report this to the action author.`);
+            wasUnknown = true;
+            continue;
           }
 
           if (permissions.has(kind)) {
@@ -94,6 +97,10 @@ async function run() {
         for (const [kind, perm] of permissions) {
           summary += `  ${kind}: ${perm}\n`;
         }
+      }
+
+      if (wasUnknown) {
+        summary += "\nAt least one call wasn't recognized. Please check the logs and report this to the action author.";
       }
 
       core.summary
@@ -129,7 +136,7 @@ async function run() {
         }
       })
       command.stderr.on('data', output => {
-        console.log(output.toString())
+        core.warning(output.toString())
       })
       command.on('exit', code => {
         if (code !== 0) {

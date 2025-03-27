@@ -35140,6 +35140,7 @@ async function analyze(name, count, token, owner, repo, branch) {
   });
 
   let permissions = new Map();
+  let wasUnknown = false;
 
   for (const run of runs.data.workflow_runs) {
     debug(`Analyzing run ${run.id}...`);
@@ -35209,6 +35210,11 @@ async function analyze(name, count, token, owner, repo, branch) {
 
           const p = permissions.get(jobName);
           for (const [kind, perm] of jobPermissions) {
+            if (kind === 'unknown') {
+              wasUnknown = true;
+              continue;
+            }
+
             if (p.has(kind)) {
               if (perm === "write") {
                 p.set(kind, perm)
@@ -35222,16 +35228,21 @@ async function analyze(name, count, token, owner, repo, branch) {
     }
   }
 
-  return permissions;
+  return [permissions, wasUnknown];
 }
 
 async function run(token, name, count, owner, repo, branch, format) {
-  const permissions = await analyze(name, count, token, owner, repo, branch);
+  const [permissions, wasUnknown] = await analyze(name, count, token, owner, repo, branch);
 
   let summary = core.summary.addHeading(`Minimal required permissions for ${name}:`);
   log(`Minimal required permissions for ${name}:`);
 
   try {
+    if (wasUnknown) {
+      summary.addRaw("\nAt least one call wasn't recognized. Some permissions are unknown. Check the workflow runs.\n");
+      throw new Error("At least one call wasn't recognized. Some permissions are unknown. Check the workflow runs.");
+    }
+
     if (permissions.size === 0) {
       summary = summary.addRaw('No permissions logs were found.');
       throw new Error('No permissions logs were found.');
