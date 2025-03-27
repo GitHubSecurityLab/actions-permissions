@@ -28,7 +28,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@${{ github.ref }}
+      - uses: GitHubSecurityLab/actions-permissions/monitor@macos-15
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
