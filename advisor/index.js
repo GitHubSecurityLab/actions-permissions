@@ -178,7 +178,7 @@ if (process.env.GITHUB_ACTIONS) {
       printUsageAndExit();
     }
     format = args[outputIndex + 1];
-    if (!format || !['yaml'].includes(format) {
+    if (!format || format !== 'yaml') {
       printUsageAndExit();
     }
     args.splice(outputIndex, 2); // Remove --output and its value from args
