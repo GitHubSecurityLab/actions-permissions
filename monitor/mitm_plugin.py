@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from mitmproxy import ctx
+from graphql.parse import graphql_parse
 
 
 class HTTP(Enum):
@@ -217,7 +218,7 @@ class GHActionsProxy:
             self.log_error(traceback.format_exc())
             sys.exit(1)
 
-    def get_permission(self, path, method, query):
+    def get_permission(self, path, method, query, body):
         path_segments = path.split('/')
 
         if len(path_segments) >= 3:
@@ -225,6 +226,11 @@ class GHActionsProxy:
                 return []
         elif len(path_segments) >= 2:
             if path_segments[1] == 'repositories' and not self.same_repository(path_segments[2]):
+                return []
+            if path_segments[1] == 'graphql':
+                # todo: use https://github.com/graphql-python/graphql-core/blob/main/docs/usage/parser.rst
+                gql = graphql_parse(body, no_location=True)
+                self.log_debug(gql)
                 return []
 
         # First try to find the permission in the tree of special cases
@@ -539,7 +545,7 @@ class GHActionsProxy:
                     if self.contains_token(v, ctx.options.token):
                         if hostname in self.ip_map or hostname in self.dns_map:
                             permissions = self.get_permission(
-                                url_parts.path, flow.request.method, parse_qs(parsed_url.query))
+                                url_parts.path, flow.request.method, parse_qs(parsed_url.query), flow.request.content)
                             self.write_json(permissions, flow.request.method, hostname, url_parts.path)
                     elif self.id_token_request_token and self.contains_token(v, self.id_token_request_token):
                         if self.id_token_request_url and flow.request.method == 'GET' and hostname == self.id_token_request_url.hostname.lower() and url_parts.path.lower() == self.id_token_request_url.path.lower():

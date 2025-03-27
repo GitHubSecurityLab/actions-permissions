@@ -28,7 +28,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@main
+      - uses: GitHubSecurityLab/actions-permissions/monitor@graphql
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
@@ -61,3 +61,25 @@ jobs:
             -H "Authorization: Bearer ${{ github.token }}"\
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://Api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/labels
+      
+      # test graphql api
+      - name: graphql
+        uses: octokit/graphql-action@v2.x
+        with:
+          query: |
+            query release($owner:String!,$repo:String!) {
+              repository(owner:$owner,name:$repo) {
+                releases(first:1) {
+                  nodes {
+                    name
+                    createdAt
+                    tagName
+                    description
+                  }
+                }
+              }
+            }
+          owner: ${{ github.event.repository.owner.name }}
+          repo: ${{ github.event.repository.name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
