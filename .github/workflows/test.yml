@@ -60,6 +60,15 @@ jobs:
             https://Api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/labels
       
       # test graphql api
+      - name: graphql api curl
+        run: |
+          curl \
+            -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }}" -X POST -d " \
+            { \
+              \"query\": \"query { viewer { login }}\" \
+            } \
+            " https://api.github.com/graphql
+
       - name: graphql
         uses: octokit/graphql-action@v2.x
         with:
