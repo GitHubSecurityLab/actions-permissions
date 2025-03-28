@@ -9,9 +9,21 @@ from urllib.parse import urlsplit
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from mitmproxy import ctx
-from graphql import parse as graphql_parse
-from graphql import print_ast
+from graphql import parse as graphql_parse, print_ast, visit
+from graphql.language.visitor import Visitor
 
+class ConnectionsVisitor(Visitor):
+    def enterField(self, node, key, parent, path, ancestors):
+        if node.name.value == 'repository':
+            for subfield in node.selection_set.selections:
+                if subfield.name.value == 'issues':
+                    for subsubfield in subfield.selection_set.selections:
+                        if subsubfield.name.value == 'edges':
+                            self.connections.append('issues')
+                elif subfield.name.value == 'pullRequests':
+                    for subsubfield in subfield.selection_set.selections:
+                        if subsubfield.name.value == 'edges':
+                            self.connections.append('pullRequests')
 
 class HTTP(Enum):
     GET = 1
@@ -230,13 +242,21 @@ class GHActionsProxy:
             if path_segments[1] == 'repositories' and not self.same_repository(path_segments[2]):
                 return []
             if path_segments[1] == 'graphql':
-                # todo: 
-                # https://github.com/graphql-python/graphql-core/blob/main/docs/usage/parser.rst
-                # https://docs.github.com/en/graphql/guides/forming-calls-with-graphql
                 self.log_debug(f"body: {body}")
                 body_json = json.loads(body)
                 gql = graphql_parse(body_json.get("query"), no_location=True)
                 self.log_debug(f"gql: {print_ast(gql)}")
+                # links:
+                # https://docs.github.com/en/graphql/guides/migrating-from-rest-to-graphql
+                # https://grep.app/search?q=from+graphql+import+parse
+                # https://grep.app/search?regexp=true&q=-+uses%3A+octokit%2Fgraphql-action%28.%7C%5Cn%29*-+
+                # Visitor https://github.com/elastic/connectors/blob/main/connectors/sources/graphql.py
+
+                # visit the AST and collect all the connections
+                visitor = ConnectionsVisitor()
+                visit(gql, visitor)
+                self.log_debug(f"connections: {visitor.connections}")
+
                 return []
 
         # First try to find the permission in the tree of special cases
