@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from mitmproxy import ctx
 from graphql import parse as graphql_parse
+from graphql import print_ast
 
 
 class HTTP(Enum):
@@ -235,7 +236,7 @@ class GHActionsProxy:
                 self.log_debug(f"body: {body}")
                 body_json = json.loads(body)
                 gql = graphql_parse(body_json.get("query"), no_location=True)
-                self.log_debug(f"gql: {gql}")
+                self.log_debug(f"gql: {print_ast(gql)}")
                 return []
 
         # First try to find the permission in the tree of special cases
