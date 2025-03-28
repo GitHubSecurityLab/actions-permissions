@@ -13,17 +13,19 @@ from graphql import parse as graphql_parse, print_ast, visit
 from graphql.language.visitor import Visitor
 
 class ConnectionsVisitor(Visitor):
-    def enterField(self, node, key, parent, path, ancestors):
+    connections = {}
+
+    def enter_field(self, node, key, parent, path, ancestors):
         if node.name.value == 'repository':
             for subfield in node.selection_set.selections:
                 if subfield.name.value == 'issues':
                     for subsubfield in subfield.selection_set.selections:
                         if subsubfield.name.value == 'edges':
-                            self.connections.append('issues')
+                            self.connections.add('issues')
                 elif subfield.name.value == 'pullRequests':
                     for subsubfield in subfield.selection_set.selections:
                         if subsubfield.name.value == 'edges':
-                            self.connections.append('pullRequests')
+                            self.connections.add('pullRequests')
 
 class HTTP(Enum):
     GET = 1
