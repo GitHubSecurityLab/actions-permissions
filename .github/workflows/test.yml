@@ -1,5 +1,11 @@
 on:
   workflow_dispatch:
+    inputs:
+      enable_debug:
+        description: "Enable logging"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -29,6 +35,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: GitHubSecurityLab/actions-permissions/monitor@main
+        with:
+          debug: ${{ github.event.inputs.enable_debug }}
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
