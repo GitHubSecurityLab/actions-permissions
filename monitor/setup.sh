@@ -50,10 +50,10 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   pid=$(sudo lsof -i -P -n 2>/dev/null | sed -En "s/Python *([0-9]*) *mitmproxyuser *.*TCP \*:8080 \(LISTEN\)/\1/p" | head -1)
   sudo kill $pid
 
-  echo "sudo security authorizationdb write com.apple.trust-settings.admin allow..."
+  # echo "sudo security authorizationdb write com.apple.trust-settings.admin allow..."
   # install mitmproxy certificate as CA
   # disable any GUI prompts for certificate installation
-  sudo security authorizationdb write com.apple.trust-settings.admin allow
+  # sudo security authorizationdb write com.apple.trust-settings.admin allow
   # the command itself may run https requests, this is why we didn't setup transparent proxy yet
   # TODO: check if -r trustRoot is needed
   echo "sudo security add-trusted-cert -d -p ssl -p basic -k /Library/Keychains/System.keychain /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem..."
