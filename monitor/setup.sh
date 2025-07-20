@@ -121,7 +121,9 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
     python_package="python3.12"
   fi
 
-  sudo apt install -y "$python_package"-venv
+  sudo DEBIAN_FRONTEND=noninteractive \
+    apt-get install --yes --no-install-recommends \
+      "$python_package"-venv
 
   # create mitmproxyuser, otherwise proxy won't intercept local trafic from the same user
   sudo useradd --create-home mitmproxyuser
