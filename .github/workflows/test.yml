@@ -42,7 +42,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@main
+      - uses: GitHubSecurityLab/actions-permissions/monitor@releases
         with:
           debug: ${{ github.event.inputs.enable_debug }}
 
