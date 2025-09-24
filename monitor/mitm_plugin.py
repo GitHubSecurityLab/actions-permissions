@@ -220,12 +220,18 @@ class GHActionsProxy:
     def get_permission(self, path, method, query):
         path_segments = path.split('/')
 
+        self.log_debug(
+            "len(path_segments): %d" % len(path_segments))
+
         if len(path_segments) >= 3:
             if path_segments[1] == 'repos' and not self.same_repository(path_segments[2], path_segments[3]):
                 return []
         elif len(path_segments) >= 2:
             if path_segments[1] == 'repositories' and not self.same_repository(path_segments[2]):
                 return []
+
+        self.log_debug(
+            "asdf")
 
         # First try to find the permission in the tree of special cases
         node = self.rest_api_map
@@ -306,9 +312,6 @@ class GHActionsProxy:
                     return [('issues', permissions[1]), ('pull-requests', permissions[1])]
 
                 return [permissions]
-            
-        self.log_debug(
-            "len(path_segments): %d" % len(path_segments))
 
         # Get the permission by the pattern of (GET|POST|etc) /repos/{owner}/{repo}/{what}/{id} -> {what, permission}
         if len(path_segments) >= 5:
