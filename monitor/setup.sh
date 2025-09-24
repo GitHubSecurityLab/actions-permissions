@@ -50,7 +50,7 @@ if [ "$RUNNER_OS" = "macOS" ]; then
 
   # install mitmproxy certificate as CA
   # disable any GUI prompts for certificate installation
-  sudo security authorizationdb write com.apple.trust-settings.admin allow
+  # sudo security authorizationdb write com.apple.trust-settings.admin allow
   # the command itself may run https requests, this is why we didn't setup transparent proxy yet
   # TODO: check if -r trustRoot is needed
   sudo security add-trusted-cert -d -p ssl -p basic -k /Library/Keychains/System.keychain /Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem
