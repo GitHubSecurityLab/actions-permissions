@@ -321,6 +321,8 @@ class GHActionsProxy:
                 if method == 'GET' and self.is_public_repo(f'{path_segments[2]}/{path_segments[3]}'):
                     return []
                 return [('contents', 'read' if method == 'GET' else 'write')]
+            elif path_segments[3] == 'releases' and path_segments[4] == 'download':
+                return []
             elif path_segments[1] == 'repos' and path_segments[4] == 'deployments':
                 return [('deployments', 'read' if method == 'GET' else 'write')]
             # Issues are covered by the mapping above
