@@ -161,7 +161,7 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   while [ ! -f /home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem ]
   do
     echo "waiting for mitmdump to generate the certificate..."
-    sleep 1
+    sleep 5
     counter=$((counter+1))
     if [ $counter -gt 10 ]; then
       exit 1
