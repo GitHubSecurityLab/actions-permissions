@@ -74,7 +74,5 @@ jobs:
       - name: curl
         run: |
           curl \
-            -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ github.token }}"\
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://Api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/labels
+            https://github.com/astral-sh/uv/releases/download/0.7.12/uv-x86_64-unknown-linux-gnu.tar.gz
