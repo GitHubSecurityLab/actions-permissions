@@ -240,6 +240,8 @@ class GHActionsProxy:
 
         # If the node was found extract the permission
         if node:
+            self.log_debug(
+                "Node found: %s" % node)
             permissions = node.get(self.methods_map[method])
             if permissions:  # If the node was found, but the HTTP method wasn't, fall through to search by path pattern
                 if permissions[0].startswith('issues/pull-requests'):
