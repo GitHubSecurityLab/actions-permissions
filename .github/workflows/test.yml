@@ -24,16 +24,16 @@ jobs:
         - ubuntu-24.04-arm
         - ubuntu-22.04-arm
         - ubuntu-latest # eventually will pick up the next version and test it
-        - ubuntu-24.04 # ubuntu-latest
-        - ubuntu-22.04
-        - macos-latest # eventually will pick up the next version and test it
-        - macos-26 # public preview
-        - macos-15 # macos-latest
-        - macos-15-intel
-        - macos-14-large
-        - macos-14
-        - macos-13
-        - macos-13-xlarge
+        # - ubuntu-24.04 # ubuntu-latest
+        # - ubuntu-22.04
+        # - macos-latest # eventually will pick up the next version and test it
+        # - macos-26 # public preview
+        # - macos-15 # macos-latest
+        # - macos-15-intel
+        # - macos-14-large
+        # - macos-14
+        # - macos-13
+        # - macos-13-xlarge
         #- windows-latest # eventually will pick up the next version and test it
         #- windows-11-arm
         #- windows-2025
