@@ -23,7 +23,6 @@ jobs:
         - ubuntu-latest # eventually will pick up the next version and test it
         - ubuntu-24.04 # ubuntu-latest
         - ubuntu-22.04
-        - ubuntu-20.04
         - macos-latest # eventually will pick up the next version and test it
         - macos-15 # public preview
         - macos-14 # macos-latest
