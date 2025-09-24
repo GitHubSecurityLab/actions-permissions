@@ -304,6 +304,9 @@ class GHActionsProxy:
                     return [('issues', permissions[1]), ('pull-requests', permissions[1])]
 
                 return [permissions]
+            
+        self.log_debug(
+            "len(path_segments): %d" % len(path_segments))
 
         # Get the permission by the pattern of (GET|POST|etc) /repos/{owner}/{repo}/{what}/{id} -> {what, permission}
         if len(path_segments) >= 5:
