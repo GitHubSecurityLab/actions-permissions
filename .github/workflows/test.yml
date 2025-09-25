@@ -34,7 +34,7 @@ jobs:
         # - macos-14
         # - macos-13
         - macos-13-xlarge
-        #- windows-latest # eventually will pick up the next version and test it
+        - windows-latest # eventually will pick up the next version and test it
         #- windows-11-arm
         #- windows-2025
         #- windows-2022 # windows-latest
