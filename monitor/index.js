@@ -136,7 +136,8 @@ async function run() {
         }
       })
       command.stderr.on('data', output => {
-        core.warning(output.toString())
+        if (debug)
+          core.warning(output.toString())
       })
       command.on('exit', code => {
         if (code !== 0) {
