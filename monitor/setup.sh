@@ -61,6 +61,8 @@ if [ "$RUNNER_OS" = "macOS" ]; then
   echo "NODE_EXTRA_CA_CERTS=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Python requests library to use the certificate
   echo "REQUESTS_CA_BUNDLE=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # set environment variable for `uv` to use the certificate
+  echo "UV_NATIVE_TLS=true" >> $GITHUB_ENV
   # set environment variable for the Elixir Hex package manager to use the certificate
   echo "HEX_CACERTS_PATH=/Users/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for AWS tools
@@ -178,6 +180,8 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
   echo "NODE_EXTRA_CA_CERTS=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for the Python requests library to use the certificate
   echo "REQUESTS_CA_BUNDLE=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
+  # set environment variable for `uv` to use the certificate
+  echo "UV_NATIVE_TLS=true" >> $GITHUB_ENV
   # set environment variable for the Elixir Hex package manager to use the certificate
   echo "HEX_CACERTS_PATH=/home/mitmproxyuser/.mitmproxy/mitmproxy-ca-cert.pem" >> $GITHUB_ENV
   # set environment variable for AWS tools
